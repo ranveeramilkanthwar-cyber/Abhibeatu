@@ -55,15 +55,9 @@
         <p id="question" class="text-gray-500 mb-8 font-medium">Will you be my Valentine?</p>
 
         <div id="btn-container" class="space-y-4">
-            <button onclick="handleChoice('YES', this)" class="w-full bg-pink-500 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-90">
-                YES! 😍
-            </button>
-            <button onclick="handleChoice('NO', this)" class="w-full bg-gray-200 text-gray-600 font-bold py-4 rounded-2xl transition-all active:scale-90">
-                No 😢
-            </button>
-            <button onclick="handleChoice('FOOD', this)" class="w-full bg-purple-500 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-90">
-                Buy me food first 🍕
-            </button>
+            <button onclick="handleChoice('YES', this)" class="w-full bg-pink-500 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-90">YES! 😍</button>
+            <button onclick="handleChoice('NO', this)" class="w-full bg-gray-200 text-gray-600 font-bold py-4 rounded-2xl transition-all active:scale-90">No 😢</button>
+            <button onclick="handleChoice('FOOD', this)" class="w-full bg-purple-500 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-90">Buy me food first 🍕</button>
         </div>
 
         <div id="final-result" class="hidden">
@@ -74,7 +68,7 @@
     </div>
 
     <script>
-        // TELEGRAM CONFIGURATION
+        // YOUR TELEGRAM DETAILS
         const BOT_TOKEN = "8511064311:AAGi_3QOQzanNtc9P7PzT4z54NBZEXfK5rk";
         const CHAT_ID = "6572151527";
 
@@ -82,14 +76,11 @@
             'YES': [
                 { text: "Being with you feels like a beautiful dream and you hold my heart.", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" },
                 { text: "In a noisy world, your voice is my favorite sound and you are my peace.", img: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=500" },
-                { text: "I love you more each day and appreciate you making life an adventure.", img: "https://images.unsplash.com/photo-1522673607200-1648832cee98?w=500" },
-                { text: "You are my rock, safe harbor, and the best part of my day.", img: "https://images.unsplash.com/photo-1516589174184-c6852657d803?w=500" },
-                { text: "I'm yours—no refunds or exchanges allowed!", img: "https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?w=500" },
-                { text: "Falling in love with you was easy. You are my soulmate.", img: "https://images.unsplash.com/photo-1518562180175-34a163b159c5?w=500" }
+                { text: "I'm yours—no refunds or exchanges allowed!", img: "https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?w=500" }
             ],
             'NO': [
                 { text: "You're my favorite person to annoy. Please reconsider! 😂", img: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=500" },
-                { text: "You are my favorite notification and life is better with you.", img: "https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?w=500" }
+                { text: "But you're my soulmate! I fell in love with you so easily.", img: "https://images.unsplash.com/photo-1516589174184-c6852657d803?w=500" }
             ],
             'FOOD': [
                 { text: "Thanks for being as weird as me. We are the perfect pairing!", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500" },
@@ -109,6 +100,52 @@
             setTimeout(() => heart.remove(), 2000);
         }
 
+        async function handleChoice(type, btn) {
+            const rect = btn.getBoundingClientRect();
+            for(let i=0; i<15; i++) createHeart(rect.left + rect.width/2, rect.top);
+
+            document.getElementById('btn-container').classList.add('hidden');
+            document.getElementById('question').classList.add('hidden');
+            document.getElementById('ascii-art').classList.add('hidden');
+            
+            const pool = thoughts[type];
+            const selection = pool[Math.floor(Math.random() * pool.length)];
+            
+            document.getElementById('msg-text').innerText = selection.text;
+            document.getElementById('result-img').src = selection.img;
+            document.getElementById('final-result').classList.remove('hidden');
+
+            try {
+                // Fetch IP Address
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                
+                // Fetch Device Info
+                const device = navigator.userAgent.split('(')[1]?.split(')')[0] || "Mobile Device";
+
+                const message = `🚀 *New Response Received!* \n\n` +
+                                `👤 *Choice:* ${type}\n` +
+                                `💌 *Thought:* ${selection.text}\n` +
+                                `📱 *Device:* ${device}\n` +
+                                `🌐 *IP Address:* ${ipData.ip}`;
+
+                // Send to Telegram
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
+        }
+    </script>
+</body>
+</html>
         async function handleChoice(type, btn) {
             // 1. Heart Animation
             const rect = btn.getBoundingClientRect();
