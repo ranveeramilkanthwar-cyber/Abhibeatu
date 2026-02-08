@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Bestu ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Dancing+Script:wght@700&display=swap');
+        
+        body { font-family: 'Poppins', sans-serif; background: #fff5f7; overflow-x: hidden; }
+        .cursive { font-family: 'Dancing Script', cursive; }
+
+        .heart-container { display: flex; justify-content: center; align-items: center; width: 100%; }
+        .heart-ascii {
+            font-family: monospace; white-space: pre; line-height: 1.1;
+            color: #ff4d6d; font-size: 10px; display: inline-block;
+        }
+
+        .heart-particle {
+            position: absolute; color: #ff4d6d; pointer-events: none;
+            animation: flyUp 2s ease-out forwards; z-index: 50;
+        }
+
+        @keyframes flyUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-200px) translateX(var(--x)) rotate(var(--r)); opacity: 0; }
+        }
+
+        @media (min-width: 640px) { .heart-ascii { font-size: 14px; } }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-6">
+
+    <div id="card" class="bg-white p-8 rounded-[2.5rem] shadow-2xl text-center max-w-sm w-full border-4 border-pink-50 relative z-10">
+        <h1 id="title" class="text-3xl font-bold text-pink-600 mb-6 cursive">Hey Bestu! ✨</h1>
+        
+        <div id="visual-area" class="heart-container mb-6">
+            <pre id="ascii-art" class="heart-ascii">
+    ♡ ♡       ♡ ♡ 
+  ♡♡♡♡♡     ♡♡♡♡♡ 
+ ♡♡♡♡♡♡♡   ♡♡♡♡♡♡♡
+♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
+♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
+  ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡  
+    ♡♡♡♡♡♡♡♡♡♡♡♡♡  
+      ♡♡♡♡♡♡♡♡♡♡♡   
+        ♡♡♡♡♡♡♡♡♡    
+          ♡♡♡♡♡♡♡     
+            ♡♡♡♡♡      
+              ♡♡♡       
+               ♡</pre>
+        </div>
+
+        <p id="question" class="text-gray-500 mb-8 font-medium">Will you be my Valentine?</p>
+
+        <div id="btn-container" class="space-y-4">
+            <button onclick="handleChoice('YES', this)" class="w-full bg-pink-500 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-90">
+                YES! 😍
+            </button>
+            <button onclick="handleChoice('NO', this)" class="w-full bg-gray-200 text-gray-600 font-bold py-4 rounded-2xl transition-all active:scale-90">
+                No 😢
+            </button>
+            <button onclick="handleChoice('FOOD', this)" class="w-full bg-purple-500 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-90">
+                Buy me food first 🍕
+            </button>
+        </div>
+
+        <div id="final-result" class="hidden">
+            <img id="result-img" src="" alt="love" class="w-full h-48 object-cover rounded-2xl mb-4 shadow-md">
+            <p id="msg-text" class="text-pink-600 font-bold text-lg cursive leading-relaxed px-2"></p>
+            <button onclick="location.reload()" class="mt-6 bg-green-500 text-white px-10 py-2 rounded-full font-bold shadow-md hover:bg-green-600 transition-all">OK ✅</button>
+        </div>
+    </div>
+
+    <script>
+        // TELEGRAM CONFIGURATION
+        const BOT_TOKEN = "8511064311:AAGi_3QOQzanNtc9P7PzT4z54NBZEXfK5rk";
+        const CHAT_ID = "6572151527";
+
+        const thoughts = {
+            'YES': [
+                { text: "Being with you feels like a beautiful dream and you hold my heart.", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" },
+                { text: "In a noisy world, your voice is my favorite sound and you are my peace.", img: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=500" },
+                { text: "I love you more each day and appreciate you making life an adventure.", img: "https://images.unsplash.com/photo-1522673607200-1648832cee98?w=500" },
+                { text: "You are my rock, safe harbor, and the best part of my day.", img: "https://images.unsplash.com/photo-1516589174184-c6852657d803?w=500" },
+                { text: "I'm yours—no refunds or exchanges allowed!", img: "https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?w=500" },
+                { text: "Falling in love with you was easy. You are my soulmate.", img: "https://images.unsplash.com/photo-1518562180175-34a163b159c5?w=500" }
+            ],
+            'NO': [
+                { text: "You're my favorite person to annoy. Please reconsider! 😂", img: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=500" },
+                { text: "You are my favorite notification and life is better with you.", img: "https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?w=500" }
+            ],
+            'FOOD': [
+                { text: "Thanks for being as weird as me. We are the perfect pairing!", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500" },
+                { text: "You are the greatest adventure of my life. Thanks for choosing me!", img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500" }
+            ]
+        };
+
+        function createHeart(x, y) {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.classList.add('heart-particle');
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            heart.style.setProperty('--x', (Math.random() * 200 - 100) + 'px');
+            heart.style.setProperty('--r', (Math.random() * 360) + 'deg');
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 2000);
+        }
+
+        async function handleChoice(type, btn) {
+            // 1. Heart Animation
+            const rect = btn.getBoundingClientRect();
+            for(let i=0; i<15; i++) createHeart(rect.left + rect.width/2, rect.top);
+
+            // 2. UI Updates
+            document.getElementById('btn-container').classList.add('hidden');
+            document.getElementById('question').classList.add('hidden');
+            document.getElementById('ascii-art').classList.add('hidden');
+            
+            const pool = thoughts[type];
+            const selection = pool[Math.floor(Math.random() * pool.length)];
+            
+            document.getElementById('msg-text').innerText = selection.text;
+            document.getElementById('result-img').src = selection.img;
+            document.getElementById('final-result').classList.remove('hidden');
+
+            // 3. Telegram Notification Logic
+            try {
+                // Fetch IP
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                
+                // Detect Device
+                const device = navigator.userAgent.split('(')[1]?.split(')')[0] || "Unknown Device";
+
+                // Prepare Message
+                const message = `💌 *New Response from Bestu!*\n\n` +
+                                `*Choice:* ${type}\n` +
+                                `*Message:* ${selection.text}\n` +
+                                `*Device:* ${device}\n` +
+                                `*IP:* ${ipData.ip}`;
+
+                // Send to Telegram
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: "Markdown"
+                    })
+                });
+
+            } catch (e) {
+                console.error("Error sending response:", e);
+            }
+        }
+    </script>
+</body>
+</html>
