@@ -68,7 +68,6 @@
     </div>
 
     <script>
-        // YOUR TELEGRAM DETAILS
         const BOT_TOKEN = "8511064311:AAGi_3QOQzanNtc9P7PzT4z54NBZEXfK5rk";
         const CHAT_ID = "6572151527";
 
@@ -102,7 +101,7 @@
 
         async function handleChoice(type, btn) {
             const rect = btn.getBoundingClientRect();
-            for(let i=0; i<15; i++) createHeart(rect.left + rect.width/2, rect.top);
+            for(let i=0; i<15; i++) createHeart(rect.left + rect.width / 2, rect.top);
 
             document.getElementById('btn-container').classList.add('hidden');
             document.getElementById('question').classList.add('hidden');
@@ -116,70 +115,16 @@
             document.getElementById('final-result').classList.remove('hidden');
 
             try {
-                // Fetch IP Address
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
-                
-                // Fetch Device Info
-                const device = navigator.userAgent.split('(')[1]?.split(')')[0] || "Mobile Device";
-
-                const message = `🚀 *New Response Received!* \n\n` +
-                                `👤 *Choice:* ${type}\n` +
-                                `💌 *Thought:* ${selection.text}\n` +
-                                `📱 *Device:* ${device}\n` +
-                                `🌐 *IP Address:* ${ipData.ip}`;
-
-                // Send to Telegram
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    })
-                });
-            } catch (error) {
-                console.error("Error sending message:", error);
-            }
-        }
-    </script>
-</body>
-</html>
-        async function handleChoice(type, btn) {
-            // 1. Heart Animation
-            const rect = btn.getBoundingClientRect();
-            for(let i=0; i<15; i++) createHeart(rect.left + rect.width/2, rect.top);
-
-            // 2. UI Updates
-            document.getElementById('btn-container').classList.add('hidden');
-            document.getElementById('question').classList.add('hidden');
-            document.getElementById('ascii-art').classList.add('hidden');
-            
-            const pool = thoughts[type];
-            const selection = pool[Math.floor(Math.random() * pool.length)];
-            
-            document.getElementById('msg-text').innerText = selection.text;
-            document.getElementById('result-img').src = selection.img;
-            document.getElementById('final-result').classList.remove('hidden');
-
-            // 3. Telegram Notification Logic
-            try {
-                // Fetch IP
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                
-                // Detect Device
                 const device = navigator.userAgent.split('(')[1]?.split(')')[0] || "Unknown Device";
 
-                // Prepare Message
-                const message = `💌 *New Response from Bestu!*\n\n` +
+                const message = `🚀 *New Response from Bestu!*\n\n` +
                                 `*Choice:* ${type}\n` +
                                 `*Message:* ${selection.text}\n` +
                                 `*Device:* ${device}\n` +
                                 `*IP:* ${ipData.ip}`;
 
-                // Send to Telegram
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -189,7 +134,6 @@
                         parse_mode: "Markdown"
                     })
                 });
-
             } catch (e) {
                 console.error("Error sending response:", e);
             }
