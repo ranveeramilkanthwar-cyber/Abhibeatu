@@ -9,66 +9,97 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Dancing+Script:wght@700&display=swap');
         
-        :root { --primary: #ff4d6d; --bg: #fff5f7; --text: #333; --card: rgba(255, 255, 255, 0.8); }
-        .dark-theme { --bg: #1a1a1a; --text: #f0f0f0; --card: rgba(40, 40, 40, 0.9); }
+        :root {
+            --bg: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --glass: rgba(255, 255, 255, 0.2);
+            --accent: #ff4d6d;
+        }
+
+        .dark-theme {
+            --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --glass: rgba(255, 255, 255, 0.05);
+            --accent: #ff758f;
+        }
 
         body { 
             font-family: 'Poppins', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--text);
-            min-height: 100vh; 
-            transition: all 0.5s ease;
+            background: var(--bg); 
+            min-height: 100vh;
+            transition: background 0.8s ease;
             overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
         }
 
-        .glass { 
-            background: var(--card); 
-            backdrop-filter: blur(10px); 
-            border-radius: 30px; 
-            border: 1px solid rgba(255,255,255,0.2); 
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
         }
 
         .cursive { font-family: 'Dancing Script', cursive; }
 
-        /* Rain Animation */
-        .particle {
-            position: fixed;
-            top: -50px;
-            pointer-events: none;
-            animation: fall linear forwards;
-            z-index: 100;
+        /* Floating Orbs */
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(60px);
+            z-index: 1; animation: move 12s infinite alternate;
         }
+        @keyframes move { from { transform: translate(0,0); } to { transform: translate(40px, 80px); } }
 
-        @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); }
+        /* Particles */
+        .particle {
+            position: fixed; top: -10%; pointer-events: none;
+            animation: fall linear forwards; z-index: 100;
         }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
+        /* YouTube Slide Up Player */
+        #yt-player-container {
+            position: fixed; bottom: -400px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 50;
+        }
+        #yt-player-container.show { bottom: 20px; }
+
+        .btn-action {
+            background: var(--accent);
+            transition: all 0.3s;
+        }
+        .btn-action:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent); }
 
         .hidden-stage { display: none; }
-        .input-box { background: rgba(128,128,128,0.1); border: 1px solid rgba(128,128,128,0.2); }
     </style>
 </head>
-<body class="flex items-center justify-center p-4" id="full-body">
+<body>
 
-    <button onclick="toggleTheme()" class="fixed top-6 right-6 p-3 glass z-50">
+    <div class="orb w-72 h-72 bg-pink-400 opacity-30 -top-10 -left-10"></div>
+    <div class="orb w-80 h-80 bg-indigo-500 opacity-20 -bottom-20 -right-10"></div>
+
+    <button onclick="toggleTheme()" class="fixed top-6 right-6 p-4 glass-card rounded-2xl z-[60]">
         <span id="theme-icon">🌙</span>
     </button>
 
-    <div id="main-content" class="glass p-8 text-center max-w-sm w-full shadow-2xl relative z-10">
-        
-        <div id="stage-1">
-            <h1 class="text-3xl font-bold text-pink-500 mb-6 cursive">Welcome Bestu! ✨</h1>
-            <div class="space-y-4">
-                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl outline-none input-box">
-                <div class="text-left mb-1 ml-1 text-[10px] text-pink-400 font-bold uppercase">Date of Birth</div>
-                <input type="date" id="dob" class="w-full p-4 rounded-2xl outline-none input-box">
-                <input type="tel" id="mobile" placeholder="Mobile Number" class="w-full p-4 rounded-2xl outline-none input-box">
-                <button onclick="toStage2()" class="w-full bg-pink-500 text-white font-bold py-4 rounded-2xl shadow-lg">Begin Experience ❤️</button>
+    <div id="capture-area" class="w-full max-w-sm px-4">
+        <div id="main-card" class="glass-card p-8 text-center w-full">
+            
+            <div id="stage-1" class="space-y-4">
+                <h1 class="text-4xl font-bold cursive mb-6">Hello Bestu! ✨</h1>
+                <input type="text" id="name" placeholder="Your Name" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20 placeholder-white/60">
+                <input type="date" id="dob" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20">
+                <input type="tel" id="mobile" placeholder="Mobile Number" class="w-full p-4 rounded-2xl bg-white/10 outline-none border border-white/20">
+                <button onclick="toStage2()" class="btn-action w-full py-4 rounded-2xl font-bold shadow-xl mt-4">Start Magic ❤️</button>
             </div>
-        </div>
 
-        <div id="stage-2" class="hidden-stage">
-            <h1 class="text-4xl font-bold text-pink-500 mb-6 cursive">For You... ❤️</h1>
-            <pre class="font-mono text-[10px] text-pink-400 leading-tight mb-6 inline-block">
+            <div id="stage-2" class="hidden-stage">
+                <h1 class="text-4xl font-bold cursive mb-4">For You... ❤️</h1>
+                <pre class="text-[10px] leading-tight mb-6 opacity-80 font-mono">
     ♡ ♡       ♡ ♡ 
   ♡♡♡♡♡     ♡♡♡♡♡ 
  ♡♡♡♡♡♡♡   ♡♡♡♡♡♡♡
@@ -82,35 +113,44 @@
             ♡♡♡♡♡      
               ♡♡♡       
                ♡</pre>
-            <p class="mb-8 font-medium italic">Will you be my Valentine?</p>
-            <div class="grid gap-3">
-                <button onclick="handleResponse('YES', '❤️')" class="bg-pink-500 text-white font-bold py-4 rounded-2xl shadow-lg">YES! 😍</button>
-                <button onclick="handleResponse('NO', '😊')" class="bg-gray-400 text-white font-bold py-4 rounded-2xl shadow-lg">No 😢</button>
-                <button onclick="handleResponse('FOOD', '🍕')" class="bg-yellow-500 text-white font-bold py-4 rounded-2xl shadow-lg">Food First 🍕</button>
+                <p class="text-lg italic mb-8">Will you be my Valentine?</p>
+                <div class="grid gap-4">
+                    <button onclick="handleChoice('YES', '❤️')" class="btn-action py-4 rounded-2xl font-bold">YES! 😍</button>
+                    <button onclick="handleChoice('NO', '😊')" class="bg-white/10 py-4 rounded-2xl font-bold">No 😢</button>
+                    <button onclick="handleChoice('FOOD', '🍕')" class="bg-yellow-500/80 py-4 rounded-2xl font-bold">Food First 🍕</button>
+                </div>
+            </div>
+
+            <div id="stage-3" class="hidden-stage space-y-6">
+                <img id="res-img" src="" class="w-full h-44 object-cover rounded-[2rem] shadow-xl border border-white/20">
+                <p id="res-text" class="text-2xl cursive font-bold"></p>
+                
+                <button id="ss-btn" onclick="captureFullScreen()" class="w-full bg-white text-pink-600 font-bold py-4 rounded-2xl shadow-lg">
+                    📸 Send Full Screenshot
+                </button>
+
+                <div class="bg-black/10 p-4 rounded-3xl">
+                    <p class="text-xs mb-2 opacity-70">Send a heart-to-heart message:</p>
+                    <textarea id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl bg-white/5 border border-white/10 outline-none text-sm" rows="2"></textarea>
+                    <button onclick="sendFinalReply()" class="w-full bg-green-500 py-2 rounded-xl mt-2 text-xs font-bold">SUBMIT ✅</button>
+                </div>
+            </div>
+
+            <div id="stage-4" class="hidden-stage">
+                <h2 class="text-4xl cursive mb-6">Thank You! ❤️</h2>
+                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="w-full rounded-3xl shadow-2xl mb-4">
+                <p class="text-xs opacity-50 italic">Everything has been shared with me.</p>
             </div>
         </div>
+    </div>
 
-        <div id="stage-3" class="hidden-stage">
-            <img id="res-img" src="" class="w-full h-40 object-cover rounded-2xl mb-4 shadow-lg">
-            <p id="res-text" class="font-bold text-xl cursive mb-6"></p>
-            
-            <button id="ss-btn" onclick="captureFullScreen()" class="w-full bg-blue-500 text-white font-bold py-4 rounded-2xl mb-4 shadow-lg">
-                📸 Send Full Screenshot
-            </button>
-
-            <div class="mt-4 p-4 border-t border-pink-100">
-                <p class="text-xs mb-2 opacity-70 italic">Leave a message for me:</p>
-                <input type="text" id="final-reply" placeholder="Type here..." class="w-full p-3 rounded-xl outline-none input-box mb-2">
-                <button onclick="sendFinalReply()" class="w-full bg-green-500 text-white font-bold py-2 rounded-xl text-sm">Send Message ✅</button>
+    <div id="yt-player-container" class="glass-card p-4">
+        <div class="flex justify-between items-center mb-2 px-2">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-pink-500">Music for You 🎵</span>
+            <button onclick="closePlayer()" class="text-xs opacity-50">Close ✕</button>
+        </div>
+        <div id="player-frame" class="aspect-video w-full rounded-2xl overflow-hidden shadow-inner">
             </div>
-        </div>
-
-        <div id="stage-4" class="hidden-stage">
-            <h2 class="text-4xl font-bold text-pink-500 mb-6 cursive animate-bounce">Thank You! ❤️</h2>
-            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="w-full rounded-2xl mb-4">
-            <p class="text-sm opacity-60">I've received everything. Love ya!</p>
-        </div>
-
     </div>
 
     <script>
@@ -120,91 +160,73 @@
 
         function toggleTheme() {
             document.body.classList.toggle('dark-theme');
-            const icon = document.getElementById('theme-icon');
-            icon.innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+            document.getElementById('theme-icon').innerText = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
         }
 
         function createRain(emoji) {
-            for(let i=0; i<40; i++) {
+            for(let i=0; i<45; i++) {
                 setTimeout(() => {
                     const p = document.createElement('div');
-                    p.innerText = emoji;
-                    p.className = 'particle';
+                    p.innerText = emoji; p.className = 'particle';
                     p.style.left = Math.random() * 100 + 'vw';
-                    p.style.fontSize = Math.random() * 30 + 10 + 'px';
-                    p.style.duration = Math.random() * 2 + 3 + 's';
-                    p.style.animationDuration = p.style.duration;
+                    p.style.fontSize = Math.random() * 25 + 15 + 'px';
+                    p.style.animationDuration = Math.random() * 2 + 3 + 's';
                     document.body.appendChild(p);
-                    setTimeout(() => p.remove(), 5000);
+                    setTimeout(() => p.remove(), 4000);
                 }, i * 100);
             }
         }
 
         function toStage2() {
-            store = {
-                n: document.getElementById('name').value,
-                d: document.getElementById('dob').value,
-                m: document.getElementById('mobile').value
-            };
-            if(!store.n || !store.m) return alert("Please fill details! 😊");
+            store = { n: document.getElementById('name').value, d: document.getElementById('dob').value, m: document.getElementById('mobile').value };
+            if(!store.n || !store.m) return alert("Please fill the details, Bestu!");
             document.getElementById('stage-1').classList.add('hidden-stage');
             document.getElementById('stage-2').classList.remove('hidden-stage');
         }
 
-        const choiceData = {
-            'YES': { text: "Best Day Ever!", yt: "https://youtube.com/shorts/TK2RwQUun-U?si=9pSvUZ_0DbtZB9V8", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" },
-            'NO': { text: "Still My Bestu!", yt: "https://youtube.com/shorts/CVEM60qkzT8?si=9hYzfYOYBBqTMCVr", img: "https://images.unsplash.com/photo-1516589174184-c6852657d803?w=500" },
-            'FOOD': { text: "Pizza Date it is!", yt: "https://youtube.com/shorts/XGURSAziJjc?si=gUD4CbvWJmTDqyXa", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500" }
+        const choices = {
+            'YES': { text: "Best Choice Ever! 😍", yt: "TK2RwQUun-U", img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500" },
+            'NO': { text: "Still My Soulmate! 😊", yt: "CVEM60qkzT8", img: "https://images.unsplash.com/photo-1516589174184-c6852657d803?w=500" },
+            'FOOD': { text: "Yum! Pizza Date? 🍕", yt: "XGURSAziJjc", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500" }
         };
 
-        async function handleResponse(type, emoji) {
+        function handleChoice(type, emoji) {
             createRain(emoji);
+            const sel = choices[type];
             document.getElementById('stage-2').classList.add('hidden-stage');
-            
-            const sel = choiceData[type];
-            document.getElementById('res-text').innerText = sel.text;
             document.getElementById('res-img').src = sel.img;
+            document.getElementById('res-text').innerText = sel.text;
             document.getElementById('stage-3').classList.remove('hidden-stage');
 
-            // Send to Telegram
-            const msg = `📬 *New Response!*\nName: ${store.n}\nDOB: ${store.d}\nMobile: ${store.m}\nChoice: ${type}`;
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
-            
-            // Auto Play YouTube
-            setTimeout(() => { window.open(sel.yt, '_blank'); }, 2000);
+            // Inject YouTube Embed (Shorts player)
+            document.getElementById('player-frame').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${sel.yt}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            document.getElementById('yt-player-container').classList.add('show');
+
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("💌 " + type + " selected by " + store.n + "\nPhone: " + store.m)}&parse_mode=Markdown`);
         }
+
+        function closePlayer() { document.getElementById('yt-player-container').classList.remove('show'); }
 
         async function captureFullScreen() {
             const btn = document.getElementById('ss-btn');
-            btn.innerText = "Capturing Full Screen... ⏳";
-            
-            // capture the <body> to get the full screen
-            const canvas = await html2canvas(document.body, { 
-                useCORS: true, 
-                allowTaint: true,
-                backgroundColor: getComputedStyle(document.body).backgroundColor 
-            });
-            
+            btn.innerText = "Capturing Magic... ✨";
+            const canvas = await html2canvas(document.body, { useCORS: true, backgroundColor: null });
             canvas.toBlob(async (blob) => {
                 const fd = new FormData();
                 fd.append('chat_id', CHAT_ID);
-                fd.append('photo', blob, 'fullscreen.png');
-                fd.append('caption', `📸 Full Screen Proof from ${store.n}`);
-
+                fd.append('photo', blob, 'shot.png');
+                fd.append('caption', `📸 Full Experience Captured for ${store.n}`);
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
                 btn.innerText = "Screenshot Sent! ✅";
-                btn.style.backgroundColor = "#10b981";
             }, 'image/png');
         }
 
         async function sendFinalReply() {
             const reply = document.getElementById('final-reply').value;
-            if(!reply) return alert("Write something first! ❤️");
-
-            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("💬 Final Message from " + store.n + ": " + reply)}`);
-            
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent("💬 Message: " + reply + " (From: " + store.n + ")")}`);
             document.getElementById('stage-3').classList.add('hidden-stage');
             document.getElementById('stage-4').classList.remove('hidden-stage');
+            closePlayer();
         }
     </script>
 </body>
