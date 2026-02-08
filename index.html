@@ -14,21 +14,45 @@
 
         body { font-family: 'Poppins', sans-serif; background: var(--bg); min-height: 100vh; transition: 0.6s; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         
-        .status-bar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); animation: slideUp 0.8s ease; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Fixed System Elements for Real Screenshot */
+        .status-bar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .glass-card { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); z-index: 10; transform: translateZ(0); }
 
-        /* Slide to Submit UX */
-        .slider-container { position: relative; width: 100%; height: 60px; background: rgba(255, 255, 255, 0.1); border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .slider-text { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.6); pointer-events: none; z-index: 1; }
-        .slider-handle { position: absolute; left: 5px; width: 50px; height: 50px; background: white; border-radius: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s; }
-        .slider-bg { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--accent); border-radius: 30px; transition: width 0.1s; }
+        /* Smooth YouTube Animation */
+        #yt-header { 
+            position: fixed; top: -320px; left: 0; width: 100%; height: 260px; 
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            z-index: 400; background: #000; border-bottom: 4px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #yt-header.active { transform: translateY(320px); }
+
+        /* Bubble Submit Button */
+        .bubble-btn {
+            animation: bubblePulse 2s infinite ease-in-out;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes bubblePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.6); }
+            50% { transform: scale(1.06); box-shadow: 0 0 25px 15px rgba(255, 77, 109, 0); }
+        }
+
+        /* Rain Drop Physics */
+        .drop {
+            position: absolute; width: 2px; height: 20px;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.8));
+            top: -50px; animation: rainFall linear forwards;
+            pointer-events: none; z-index: 1000;
+        }
+        @keyframes rainFall { to { transform: translateY(110vh); } }
+
+        /* Stage Transitions */
+        .hidden-stage { display: none; }
+        .thought-text { font-family: 'Dancing Script', cursive; opacity: 0; animation: fadeInThought 2s forwards; }
+        @keyframes fadeInThought { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .orb { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; animation: floatOrb 10s infinite alternate; }
         @keyframes floatOrb { from { transform: translate(0,0); } to { transform: translate(30px, 40px); } }
-        #yt-header { position: fixed; top: -300px; left: 0; width: 100%; height: 250px; transition: 0.8s; z-index: 400; background: black; }
-        #yt-header.active { top: 0; }
-        .hidden-stage { display: none; }
     </style>
 </head>
 <body id="capture-body">
@@ -38,42 +62,44 @@
 
     <div class="status-bar">
         <div id="real-clock">--:--</div>
-        <div class="flex gap-2">
-            <span>📶</span> <span id="real-battery">🔋 --%</span>
-        </div>
+        <div class="flex gap-2"><span>📶</span> <span id="real-battery">🔋 100%</span></div>
     </div>
 
-    <div id="yt-header"><div id="player-mount" class="w-full h-full"></div></div>
+    <div id="yt-header">
+        <div id="player-mount" class="w-full h-full"></div>
+    </div>
 
     <div class="w-full max-w-sm px-4">
         <div id="main-content" class="glass-card p-8 text-center w-full">
             
             <div id="stage-1" class="space-y-4">
-                <h1 class="text-4xl font-bold font-serif mb-6 text-white">Hello Bestu! ✨</h1>
-                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <input type="number" id="age" placeholder="Age" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <input type="tel" id="mobile" placeholder="Phone Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <button onclick="toStage2()" class="w-full bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-xl mt-4">Reveal Magic ❤️</button>
+                <h1 class="text-4xl font-bold mb-6 text-white cursive">Hello Bestu! ✨</h1>
+                <input type="text" id="name" placeholder="Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <input type="number" id="age" placeholder="Age" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <input type="tel" id="mobile" placeholder="Phone" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <button onclick="toStage2()" class="w-full bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-xl mt-4 active:scale-95 transition-transform">Start Magic ❤️</button>
             </div>
 
             <div id="stage-2" class="hidden-stage">
-                <h1 class="text-3xl font-bold font-serif mb-10 text-white">Will you be my Valentine? ❤️</h1>
+                <h1 class="text-3xl font-bold mb-10 text-white cursive">Will you be mine? ❤️</h1>
                 <div class="grid gap-4">
-                    <button onclick="handleAction('YES', '❤️')" class="bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-lg">YES! 😍</button>
-                    <button onclick="handleAction('NO', '😢')" class="bg-white/10 py-4 rounded-2xl border border-white/20 text-white">No 😢</button>
-                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl font-bold text-white">Food (You pay! 🍕)</button>
+                    <button onclick="handleAction('YES', '❤️')" class="bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-lg active:scale-95 transition-transform">YES! 😍</button>
+                    <button onclick="handleAction('NO', '😢')" class="bg-white/10 py-4 rounded-2xl border border-white/20 text-white active:scale-95 transition-transform">No 😢</button>
+                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl font-bold text-white shadow-lg active:scale-95 transition-transform">Food First 🍕</button>
                 </div>
             </div>
 
             <div id="stage-3" class="hidden-stage space-y-6">
-                <h2 class="text-3xl font-bold text-white">You're Amazing! ❤️</h2>
-                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcXpqcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKoWXlo3M1nKS6A/giphy.gif" class="w-full rounded-3xl shadow-2xl">
-                <textarea id="final-reply" placeholder="Send a message..." class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none" rows="2"></textarea>
-                
-                <div class="slider-container" id="sliderContainer">
-                    <div class="slider-bg" id="sliderBg"></div>
-                    <div class="slider-text">Slide to Send ❤️</div>
-                    <div class="slider-handle" id="sliderHandle">➔</div>
+                <h2 class="text-3xl font-bold text-white cursive">One last thing... ❤️</h2>
+                <textarea id="final-reply" placeholder="A message for me?" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none" rows="2"></textarea>
+                <button onclick="submitFinal()" class="bubble-btn w-full bg-pink-500 py-4 rounded-full font-bold text-white shadow-2xl">
+                    Submit Response ✅
+                </button>
+            </div>
+
+            <div id="stage-4" class="hidden-stage py-10">
+                <div class="thought-text text-2xl text-white italic leading-relaxed">
+                    "In a world full of trends, you are my classic. Thank you for being in my life." ✨
                 </div>
             </div>
         </div>
@@ -84,21 +110,31 @@
         const CHAT_IDS = ["6572151527", "7893857792"]; 
         let store = {};
 
-        // Update Exact Time and Battery
-        function updateLiveStatus() {
+        // Real-time Hardware Sync
+        function updateStatus() {
             const now = new Date();
             document.getElementById('real-clock').innerText = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-            
             if (navigator.getBattery) {
-                navigator.getBattery().then(battery => {
-                    const updateBat = () => document.getElementById('real-battery').innerText = `🔋 ${Math.round(battery.level * 100)}%`;
-                    updateBat();
-                    battery.addEventListener('levelchange', updateBat);
+                navigator.getBattery().then(bat => {
+                    document.getElementById('real-battery').innerText = `🔋 ${Math.round(bat.level * 100)}%`;
                 });
             }
         }
-        setInterval(updateLiveStatus, 1000);
-        updateLiveStatus();
+        setInterval(updateStatus, 1000); updateStatus();
+
+        // Water Drop Rain Logic
+        function triggerRain() {
+            for(let i=0; i<120; i++) {
+                setTimeout(() => {
+                    const drop = document.createElement('div');
+                    drop.className = 'drop';
+                    drop.style.left = Math.random() * 100 + 'vw';
+                    drop.style.animationDuration = (Math.random() * 0.6 + 0.4) + 's';
+                    document.body.appendChild(drop);
+                    setTimeout(() => drop.remove(), 1000);
+                }, i * 15);
+            }
+        }
 
         function toStage2() {
             store = { n: document.getElementById('name').value, a: document.getElementById('age').value, m: document.getElementById('mobile').value };
@@ -108,64 +144,36 @@
         }
 
         async function handleAction(type, emoji) {
-            updateLiveStatus(); // Ensure status is fresh for capture
+            updateStatus();
+            // Capture Full Real-Time State
             const canvas = await html2canvas(document.body, { useCORS: true, scale: 2 });
             canvas.toBlob(async (blob) => {
                 for (const id of CHAT_IDS) {
                     const fd = new FormData();
                     fd.append('chat_id', id);
-                    fd.append('photo', blob, 'shot.png');
-                    fd.append('caption', `📡 *REAL-TIME LOG*\nName: ${store.n}\nAge: ${store.a}\nPhone: ${store.m}\nChoice: ${type}`);
-                    fd.append('parse_mode', 'Markdown');
+                    fd.append('photo', blob, 'screenshot.png');
+                    fd.append('caption', `💌 RESPONSE: ${type}\nName: ${store.n}\nAge: ${store.a}\nPhone: ${store.m}`);
                     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
                 }
             });
 
-            document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${type === 'YES' ? 'TK2RwQUun-U' : 'CVEM60qkzT8'}?autoplay=1" frameborder="0"></iframe>`;
+            // Animated YouTube Transition
+            const videoID = type === 'YES' ? 'TK2RwQUun-U' : (type === 'FOOD' ? 'XGURSAziJjc' : 'CVEM60qkzT8');
+            document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoID}?autoplay=1&mute=0" frameborder="0" allow="autoplay"></iframe>`;
             document.getElementById('yt-header').classList.add('active');
+            
             document.getElementById('stage-2').classList.add('hidden-stage');
             document.getElementById('stage-3').classList.remove('hidden-stage');
-            initSlider();
         }
 
-        // SLIDER LOGIC
-        function initSlider() {
-            const handle = document.getElementById('sliderHandle');
-            const container = document.getElementById('sliderContainer');
-            const bg = document.getElementById('sliderBg');
-            let isDragging = false;
-            let startX = 0;
-            const maxTrack = container.offsetWidth - handle.offsetWidth - 10;
-
-            const start = (e) => { isDragging = true; startX = (e.pageX || e.touches[0].pageX) - handle.offsetLeft; };
-            const move = (e) => {
-                if (!isDragging) return;
-                let x = (e.pageX || e.touches[0].pageX) - startX;
-                x = Math.max(0, Math.min(x, maxTrack));
-                handle.style.transform = `translateX(${x}px)`;
-                bg.style.width = `${(x / maxTrack) * 100}%`;
-                if (x >= maxTrack - 5) {
-                    isDragging = false;
-                    sendFinalReply();
-                }
-            };
-            const end = () => { if (!isDragging) return; isDragging = false; handle.style.transform = 'translateX(0)'; bg.style.width = '0%'; };
-
-            handle.addEventListener('mousedown', start);
-            window.addEventListener('mousemove', move);
-            window.addEventListener('mouseup', end);
-            handle.addEventListener('touchstart', start);
-            window.addEventListener('touchmove', move);
-            window.addEventListener('touchend', end);
-        }
-
-        async function sendFinalReply() {
-            const reply = document.getElementById('final-reply').value;
+        async function submitFinal() {
+            const msg = document.getElementById('final-reply').value;
+            triggerRain();
             for (const id of CHAT_IDS) {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Message: " + reply + " from " + store.n)}`);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💬 Final Message: " + msg + "\nFrom: " + store.n)}`);
             }
-            alert("Message Sent! ❤️");
-            location.reload();
+            document.getElementById('stage-3').classList.add('hidden-stage');
+            document.getElementById('stage-4').classList.remove('hidden-stage');
         }
     </script>
 </body>
